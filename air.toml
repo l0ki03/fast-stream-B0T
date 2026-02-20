@@ -1,0 +1,27 @@
+# AIR CONFIG FOR file-stream-bot
+
+root = "."
+tmp_dir = "tmp/fast-stream-bot"
+
+[build]
+cmd = "go build -o ./tmp/fast-stream-bot/app ./cmd/fsb"
+bin = "tmp/fast-stream-bot/app"
+include_ext = ["go"]
+exclude_dir = [
+    "frontend",
+    "tmp",
+    "internal/database/postgresql/sqlc",
+]
+delay = 100
+
+[log]
+time = true
+
+[color]
+main = "cyan"
+watcher = "yellow"
+build = "green"
+runner = "magenta"
+
+[env]
+GO_ENV = "development"

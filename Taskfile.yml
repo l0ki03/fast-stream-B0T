@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  GREETING: Hello, world!
+
+tasks:
+  default:
+    desc: Print a greeting message
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+  backend:build:
+    desc: Build the backend
+    cmds:
+      - go build -o ./bin/fast-stream-bot ./cmd/fsb
+  
+  frontend:build:
+    desc: Build the frontend
+    cmds:
+      - pnpx @tailwindcss/cli 
+        -i ./frontend/assets/styles/input.css 
+        -o ./frontend/assets/styles/tailwind.css
+      
+  run:
+    desc: Run the bot
+    deps: [backend:build, frontend:build]
+    cmds:
+      - go run ./cmd/fsb -init-db
+
+  backend:dev:
+    desc: Run the backend in development mode
+    cmds:
+      - air -c air.toml
+
+  frontend:dev:
+    desc: Run the frontend in development mode
+    cmds:
+      - pnpx @tailwindcss/cli \
+        -i ./frontend/assets/styles/input.css \
+        -o ./frontend/assets/styles/tailwind.css \
+        --watch
+  dev:
+    desc: Run the bot in development mode
+    deps: [backend:dev, frontend:dev]

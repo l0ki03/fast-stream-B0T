@@ -1,0 +1,9 @@
+app_name = "Fast Stream Bot"
+env_file = ".env"
+header_image = "your_image_path_or_url"
+
+max_credits = 500
+min_credits_required = 5
+initial_credits = 50
+increment_credits = 10
+decrement_credits = 10

@@ -1,0 +1,53 @@
+# .goreleaser.yaml for fast-stream-bot
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    #- go generate ./... # Uncomment if needed
+    #- sh -c "echo {{.Version}} > VERSION" # Uncomment if using a VERSION file
+
+builds:
+  - main: ./cmd/fsb
+    binary: fast-stream-bot
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    ldflags:
+      - -s -w -X "main.version={{.Version}}"
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+release:
+  github:
+    owner: biisal
+    name: fast-stream-bot
+  draft: false
+  footer: >-
+
+    ---
+
+    If you want to contribute, feel free to submit a pull request.
+    If you encounter any issues or have suggestions, please open an issue on GitHub.

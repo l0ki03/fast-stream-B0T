@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{.AppName}} - {{.Title}}</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/static/styles/styles.css">
+	<link rel="stylesheet" type="text/css" href="/static/styles/tailwind.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+		integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-brand-dark-blue bg-red-800">
+	{{ if .IsJustVerified }}
+	<div id="verified" class="fixed right-4 top-8 z-50 slide-in-right mx-2">
+		<div class="bg-gray-900/80 backdrop-blur-md border border-gray-700 rounded-lg shadow-2xl
+		px-6 py-3 max-w-md w-fit flex items-center gap-3">
+
+			<i class="fa-solid fa-circle-check text-green-400 text-2xl"></i>
+
+			<div class="flex-1">
+				<p class="text-white text-sm">
+					Congrats! You have been verified for
+					<span class="font-semibold text-blue-400">{{.ExpireTime}} !</span>
+				<p class="text-white/60 text-xs mt-1">
+					Make sure to use the same browser for next time...
+				</p>
+				</p>
+			</div>
+
+			<button onclick="closeNotification()" class="text-white/60 hover:text-white transition-colors">
+				<i class="fa-solid fa-xmark text-lg"></i>
+			</button>
+		</div>
+	</div>
+
+	<script>
+		function closeNotification() {
+			const el = document.getElementById('verified');
+			el.classList.remove('slide-in-right');
+			el.classList.add('slide-out-right');
+			setTimeout(() => el.remove(), 300);
+		}
+
+		setTimeout(closeNotification, 8000);
+	</script>
+	{{ end }}
+	<main class="overflow-x-hidden max-w-screen w-full text-white text-sm " id="main">
+		<div class="p-4 container mx-auto">
+			<header class="pb-4 relative jet-font flex items-center justify-between md:h-20 h-12">
+				<a href="/">
+					<h1 id="logo" class="text-xl md:text-3xl text-blue hover:text-[#7dcfff] font-bold uppercase"><i
+							class="fa-solid fa-video"></i> {{.AppName}}</h1>
+				</a>
+				<button id="settingbtn" type="button" class="text-xl md:text-3xl text-white hover:text-[#7dcfff]">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+				<div id="settings"
+					class="absolute bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg text-base px-5 py-4 transform transition-all duration-500 -right-full top-12 z-50 min-w-[180px]">
+					<div class="flex items-center mb-2 text-gray-300 font-medium">
+						<i class="fa-solid fa-cog mr-2 text-sm"></i>
+						<span>Settings</span>
+					</div>
+					<div class="w-full h-px bg-gray-700 mb-3"></div>
+					<ul class="flex flex-col gap-3 items-start justify-center">
+						<label for="metadata"
+							class="flex items-center cursor-pointer hover:text-blue-300 transition-colors duration-200 w-full">
+							<input type="checkbox" id="metadata" name="metadata" value="false"
+								class="mr-3 w-4 h-4 accent-blue-500">
+							<span class="select-none">Hide Metadata</span>
+						</label>
+						<label for="simpleview"
+							class="flex items-center cursor-pointer hover:text-blue-300 transition-colors duration-200 w-full">
+							<input type="checkbox" id="simpleview" name="metadata" value="false"
+								class="mr-3 w-4 h-4 accent-blue-500">
+							<span class="select-none">Simple View</span>
+						</label>
+					</ul>
+				</div>
+			</header>
+
+
+
+			<div class="w-full">
+				<video class="max-h-screen" autoplay id="video" class="rounded-lg"
+					poster="https://w.wallhaven.cc/full/5g/wallhaven-5g22q5.png" controlsList="nodownload" width="100%"
+					controls>
+					<source src="{{.StreamLink}}">
+				</video>
+			</div>
+			<div class="mt-2" id="title">
+				<h2 class="text-lg md:text-2xl line-clamp-2 break-all">{{.Title}}</h2>
+			</div>
+			<div id="rest">
+
+				<div>
+					<div
+						class="border-l border-l-2 border-brand-blue text-white/70 rounded-sm p-4 mt-4 text-sm md:text-lg help">
+						If your video is not playing or taking too long to laod,<br> you can refresh the page or if the
+						issue
+						persists, download the file <br> or watch in vlc :)
+						don't wait for long!
+					</div>
+				</div>
+
+				<h1 class="text-xl  text-blue mt-8 font-bold uppercase">Do with this video</h1>
+				<div class="flex  mt-3 jet-font">
+					<a href="{{.DownloadLink}}">
+						<button type="button"
+							class="bg-[#7aa2f7] text-black hover:bg-[#7dcfff] rounded-lg px-5 py-2 text-lg font-bold uppercase ">
+							<i class="fa-solid fa-circle-down mr-1"></i>Download</button>
+					</a>
+				</div>
+
+				<div class="bg-gray-700/10 rounded-lg mt-6 p-2">
+					<h1 class="text-xl inline-flex  text-blue  font-bold uppercase">
+						<svg class="mr-2 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+							viewBox="0 0 400 400">
+							<path
+								d="M0 0 C89.76 0 179.52 0 272 0 C302 100 302 100 302 102 C323.78 102 345.56 102 368 102 C368 119.16 368 136.32 368 154 C215.54 154 63.08 154 -94 154 C-94 136.84 -94 119.68 -94 102 C-72.88 102 -51.76 102 -30 102 C-28.68 96.72 -27.36 91.44 -26 86 C-17.42 57.62 -8.84 29.24 0 0 Z"
+								fill="orange" transform="translate(119,358)" />
+							<path
+								d="M0 0 C54.12 0 108.24 0 164 0 C182.64126933 60.89481314 182.64126933 60.89481314 186.5402832 73.83911133 C187.16295132 75.90264193 187.78812875 77.96541636 188.4152832 80.02758789 C189.36413765 83.14834314 190.30595778 86.27114021 191.24609375 89.39453125 C191.52714462 90.31385941 191.8081955 91.23318756 192.09776306 92.18037415 C192.34965897 93.02295273 192.60155487 93.86553131 192.86108398 94.73364258 C193.0823143 95.46521072 193.30354462 96.19677887 193.53147888 96.95051575 C194 99 194 99 194 103 C119.75 103 45.5 103 -31 103 C-20.58650958 67.13131079 -20.58650958 67.13131079 -16.5625 53.73046875 C-16.10686952 52.21016833 -15.65130499 50.68984815 -15.19580078 49.16950989 C-14.26604019 46.06740596 -13.33530261 42.96559751 -12.40380859 39.86401367 C-11.21029785 35.88957386 -10.01980323 31.91423701 -8.83000183 27.93868542 C-7.90138147 24.8372012 -6.97107353 21.73622521 -6.04025269 18.63540077 C-5.59951405 17.16632296 -5.15934155 15.69707518 -4.71975708 14.2276516 C-4.11440006 12.2048671 -3.50673333 10.18279102 -2.8984375 8.16088867 C-2.38289307 6.44249031 -2.38289307 6.44249031 -1.85693359 4.68937683 C-1 2 -1 2 0 0 Z"
+								fill="orange" transform="translate(173,179)" />
+							<path
+								d="M0 0 C2.16869041 0.0085123 4.33474255 -0.02030477 6.50317383 -0.05200195 C15.08402652 -0.10203356 21.69322123 0.18921329 28.19468689 6.27674866 C33.53261312 11.93440965 36.03718884 16.97801397 38.11450195 24.41479492 C38.43491455 25.48419312 38.75532715 26.55359131 39.08544922 27.65539551 C39.78378157 29.99544919 40.47126545 32.33876142 41.14916992 34.68481445 C42.28923113 38.61759165 43.46445373 42.53843038 44.6496582 46.45776367 C46.99268031 54.22124502 49.29829967 61.99548937 51.59649658 69.77233887 C52.46963434 72.72401691 53.34587362 75.67477065 54.22212219 78.62552643 C55.06903489 81.47835205 55.91453945 84.33159333 56.759552 87.1849823 C57.16113371 88.5407232 57.56304736 89.89636582 57.96530151 91.25190735 C58.51901314 93.11894731 59.07071903 94.98658178 59.62231445 96.85424805 C59.93571777 97.91357544 60.24912109 98.97290283 60.57202148 100.06433105 C61.23950195 102.44604492 61.23950195 102.44604492 61.23950195 103.44604492 C22.29950195 103.44604492 -16.64049805 103.44604492 -56.76049805 103.44604492 C-53.38315014 89.9366533 -53.38315014 89.9366533 -51.46386719 83.50952148 C-51.15098 82.45815254 -51.15098 82.45815254 -50.83177185 81.38554382 C-50.15604552 79.1183496 -49.47621422 76.85241753 -48.7956543 74.58666992 C-48.31624925 72.98631672 -47.83687463 71.3859544 -47.35752869 69.7855835 C-46.3586035 66.45351161 -45.35723709 63.122184 -44.35449219 59.79125977 C-43.07564135 55.54137842 -41.80618524 51.2887518 -40.5389185 47.03540421 C-39.5546742 43.73778963 -38.56383136 40.44218435 -37.5711956 37.1470871 C-37.10037597 35.58025501 -36.63193984 34.01270449 -36.16603279 32.4444046 C-30.15441518 12.23100898 -30.15441518 12.23100898 -24.44799805 6.63354492 C-23.91561523 6.09084961 -23.38323242 5.5481543 -22.8347168 4.98901367 C-15.77241912 -0.2644846 -8.43812018 -0.05052767 0 0 Z"
+								fill="orange" transform="translate(252.760498046875,-0.446044921875)" />
+						</svg>
+
+						Watch in VLC
+					</h1>
+					<div class="mt-3 flex flex-col gap-6  jet-font pl-2">
+						<div>
+							<p class="mb-2">
+								1. Open VLC player on your device
+							</p>
+							<a href="#" target="_blank" onclick="this.href = window.location.href + '&redirect=vlc'">
+								<button type="button"
+									class="bg-orange-400 text-black hover:bg-orange-500 rounded-sm px-5 py-2 text-lg font-bold uppercase ">
+									<i class="fa-solid fa-circle        mr-1"></i>Watch in VLC</button>
+							</a>
+						</div>
+
+						<div>
+							<p class="mb-2">If the link doesn't work, Copy the link below</p>
+							<div class="relative w-full help py-4 px-2 border-l-2 border-orange-300">
+								<p id="link" class="w-full inline overflow-x-scroll text-white/70 no-scrollbar">
+								</p>
+								<button type="button" onclick="copyLink(window.location.href , this)"
+									class="absolute p-1 bg-white/10 rounded-full right-2 transform -translate-y-1/2 top-1/2"><i
+										class="fa-solid fa-clipboard"></i></button>
+							</div>
+						</div>
+
+						<p class="text-white/80 ">
+							2. Go to the "more" option or find stream option<br>
+							3. Click "New Stream" option and paste the link<br>
+							4. Enjoy
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer class="mt-12 pt-6 pb-8 text-center border-t border-white/10">
+			<p class="text-white/70 text-sm jet-font flex items-center justify-center gap-2">
+				<i class="fa-brands fa-github text-lg"></i>
+				<span>This project is open source:</span>
+				<a href="https://github.com/biisal/fast-stream-bot" target="_blank"
+					class="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors">
+					biisal/fast-stream-bot
+				</a>
+			</p>
+		</footer>
+	</main>
+</body>
+<script src="/static/scripts/script.js">
+</script>
+
+</html>

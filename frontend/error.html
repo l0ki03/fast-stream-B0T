@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Error - Codeltix</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/static/styles/styles.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+		integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-brand-dark-blue p-2 text-white text-sm flex flex-col justify-center items-center">
+	<div
+		class="bg-black/20 p-4 container mx-auto border-l-2 border-red-500 text-white/70 rounded-sm p-4 mt-4 text-sm md:text-lg">
+		{{.Error}}
+	</div>
+	<div class="flex w-full jet-font flex-wrap gap-2 mt-2">
+		<a href="/" class="w-fit">
+			<button
+				class="bg-[#7aa2f7] text-black hover:bg-[#7dcfff] font-bold rounded-lg px-4 py-2 text-sm font-bold uppercase w-full sm:w-auto">
+				<i class="fa-brands fa-telegram mr-1"></i>Home
+			</button>
+		</a>
+		<a href="https://t.me/biisalbot" target="_blank" class="w-fit">
+			<button
+				class="bg-[#00C835] text-black hover:bg-[#04E540] font-bold rounded-lg px-4 py-2 text-sm font-bold uppercase w-full sm:w-auto">
+				<i class="fa-brands fa-telegram mr-1"></i>Support
+			</button>
+
+		</a>
+	</div>
+
+</body>
+
+
+</html>

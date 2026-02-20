@@ -1,0 +1,9 @@
+node_modules
+.env
+*.log
+go-app
+tmp
+fast-stream-bot
+dist
+pnpm-lock.yaml
+bin
