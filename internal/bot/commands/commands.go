@@ -83,7 +83,7 @@ Welcome to Fast Stream Bot! ⚡️
 
 💬 Help ke liye /help bhejein.
 
-`, username, bc.dbUser.Credit)
+`, username)
 
 	shareLink := botutils.GetReferLink(bc.userInfo.Username, bc.userInfo.ID)
 	keyboard := markup.InlineKeyboard(
