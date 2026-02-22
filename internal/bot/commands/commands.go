@@ -74,11 +74,14 @@ func (bc *Context) HandleStart() (tg.UpdatesClass, error) {
 	if bc.userInfo.Username == "" {
 		username = strings.TrimSpace(bc.userInfo.FirstName + " " + bc.userInfo.LastName)
 	}
-	msg := fmt.Sprintf(`Hello %s,
-Welcome! I’m your file streaming bot.
-Simply send me a file, and I’ll generate a fast, streamable link so you can watch it online or download it anytime, anywhere.
-Please don't send any sensitive adult content or any illegal content. Otherwise, you will be banned permanently.
-Your Credits: %d
+	msg := fmt.Sprintf(`Hey %s! 🤩
+Welcome to Fast Stream Bot! ⚡️
+
+📁 Mujhe koi bhi file bhejo aur instantly direct Stream/Download link pao! 🌐
+
+🚫 Warning: No adult or illegal content. Strict ban will be applied! 
+
+💬 Help ke liye /help bhejein.
 
 for help send /help`, username, bc.dbUser.Credit)
 
