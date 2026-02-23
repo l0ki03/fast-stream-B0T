@@ -98,7 +98,7 @@ func (bc *Context) HandleStart() (tg.UpdatesClass, error) {
 			markup.URL("ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ", "https://t.me/HMmedia_Movie"),
 		),
 		markup.Row(
-			markup.URL("× REFER ×", shareLink),
+			markup.URL("× ꜱʜᴀʀᴇ ×", "tg://msg_url?text=&url=@hmmediafiletolinkbot"),
 		),
 	)
 	
