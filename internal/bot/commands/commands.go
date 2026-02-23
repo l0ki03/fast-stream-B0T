@@ -94,11 +94,11 @@ func (bc *Context) HandleStart() (tg.UpdatesClass, error) {
 	// यहाँ आपके नए बटन्स जोड़े गए हैं
 	keyboard := markup.InlineKeyboard(
 		markup.Row(
-			markup.URL("🍿 Movie Group", "https://t.me/AapkaMovieGroupLink"),
-			markup.URL("📢 Update Channel", "https://t.me/AapkaUpdateChannelLink"),
+			markup.URL("ᴍᴏᴠɪᴇ ɢʀᴏᴜᴘ", "https://t.me/AapkaMovieGroupLink"),
+			markup.URL("ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ", "https://t.me/AapkaUpdateChannelLink"),
 		),
 		markup.Row(
-			markup.URL("🔗 Refer", shareLink),
+			markup.URL("× REFER ×", shareLink),
 		),
 	)
 	
