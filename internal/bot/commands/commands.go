@@ -90,11 +90,18 @@ func (bc *Context) HandleStart() (tg.UpdatesClass, error) {
 `, username)
 
 	shareLink := botutils.GetReferLink(bc.userInfo.Username, bc.userInfo.ID)
+	
+	// यहाँ आपके नए बटन्स जोड़े गए हैं
 	keyboard := markup.InlineKeyboard(
 		markup.Row(
-			markup.URL("Refer", shareLink),
+			markup.URL("🍿 Movie Group", "https://t.me/AapkaMovieGroupLink"),
+			markup.URL("📢 Update Channel", "https://t.me/AapkaUpdateChannelLink"),
+		),
+		markup.Row(
+			markup.URL("🔗 Refer", shareLink),
 		),
 	)
+	
 	return bc.builder.Markup(keyboard).Text(bc.ctx, msg)
 }
 
