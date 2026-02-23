@@ -74,14 +74,18 @@ func (bc *Context) HandleStart() (tg.UpdatesClass, error) {
 	if bc.userInfo.Username == "" {
 		username = strings.TrimSpace(bc.userInfo.FirstName + " " + bc.userInfo.LastName)
 	}
-	msg := fmt.Sprintf(`Hey %s! 🤩
-Welcome to Fast Stream Bot! ⚡️
+	msg := fmt.Sprintf(`ʜᴇʏ %s! 🔥 
 
-📁 Mujhe koi bhi file bhejo aur instantly direct Stream/Download link pao! 🌐
+⚡️ ꜰᴀꜱᴛ ꜱᴛʀᴇᴀᴍ ʙᴏᴛ ᴍᴇɪɴ ᴡᴇʟᴄᴏᴍᴇ! 
 
-🚫 Warning: No adult or illegal content. Strict ban will be applied! 
+📂 ꜰɪʟᴇ ʙʜᴇᴊᴏ… 
+🚀 ɪɴꜱᴛᴀɴᴛ ʟɪɴᴋ ʟᴏ… 
+🎬 ꜱᴛʀᴇᴀᴍ ᴋᴀʀᴏ ʏᴀ 
+📥 ᴅᴏᴡɴʟᴏᴀᴅ ᴋᴀʀᴏ — ꜰᴜʟʟ ꜱᴘᴇᴇᴅ!  
 
-💬 Help ke liye /help bhejein.
+💡 ꜱɪᴍᴘʟᴇ. ꜰᴀꜱᴛ. ᴘᴏᴡᴇʀꜰᴜʟ. 
+
+🚫 ᴀᴅᴜʟᴛ ʏᴀ ɪʟʟᴇɢᴀʟ ᴄᴏɴᴛᴇɴᴛ = ᴅɪʀᴇᴄᴛ ʙᴀɴ! ❌
 
 `, username)
 
