@@ -10,93 +10,81 @@
 
 <style>
 body {
-    background: linear-gradient(135deg,#0f172a,#1e293b,#0f172a);
+    background-color: #141414;
 }
-.glass {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.1);
+.netflix-red {
+    background-color: #e50914;
+}
+.netflix-red:hover {
+    background-color: #f6121d;
+}
+.fade-bottom {
+    background: linear-gradient(to top, #141414 10%, transparent 100%);
 }
 </style>
 </head>
 
-<body class="text-white min-h-screen flex items-center justify-center p-4">
+<body class="text-white">
 
-<div class="max-w-5xl w-full glass rounded-2xl shadow-2xl p-6 md:p-10">
-
-<!-- HEADER -->
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-blue-400">
-        <i class="fa-solid fa-play-circle mr-2"></i>{{.AppName}}
+<!-- NAVBAR -->
+<header class="flex justify-between items-center px-6 py-4 bg-black">
+    <h1 class="text-2xl font-bold text-red-600 tracking-widest">
+        {{.AppName}}
     </h1>
-    <span class="text-sm text-white/60">Premium Stream</span>
-</div>
+</header>
 
-<!-- VIDEO -->
-<div class="rounded-xl overflow-hidden shadow-lg border border-white/10">
-    <video autoplay controls width="100%" class="rounded-xl">
+<!-- HERO VIDEO SECTION -->
+<section class="relative w-full">
+
+    <video autoplay controls width="100%" class="w-full max-h-[80vh] object-cover">
         <source src="{{.StreamLink}}">
     </video>
-</div>
 
-<!-- TITLE -->
-<div class="mt-6">
-    <h2 class="text-xl md:text-2xl font-semibold break-all">
-        {{.Title}}
-    </h2>
-    <p class="text-white/50 mt-2 text-sm">
-        File Size: {{.Size}}
-    </p>
-</div>
+    <div class="absolute bottom-0 left-0 w-full p-8 fade-bottom">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">
+            {{.Title}}
+        </h2>
 
-<!-- BUTTONS -->
-<div class="flex flex-col md:flex-row gap-4 mt-8">
+        <p class="text-gray-300 mb-6">
+            File Size: {{.Size}}
+        </p>
 
-    <a href="{{.StreamLink}}" class="flex-1">
-        <button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 
-        hover:scale-105 transition-all duration-300
-        py-4 rounded-xl font-bold text-lg shadow-lg">
-            <i class="fa-solid fa-play mr-2"></i>
-            Watch Online
-        </button>
-    </a>
+        <div class="flex flex-wrap gap-4">
 
-    <a href="{{.DownloadLink}}" class="flex-1">
-        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 
-        hover:scale-105 transition-all duration-300
-        py-4 rounded-xl font-bold text-lg shadow-lg">
-            <i class="fa-solid fa-download mr-2"></i>
-            Download Now
-        </button>
-    </a>
+            <a href="{{.StreamLink}}">
+                <button class="netflix-red px-8 py-3 rounded font-bold text-lg shadow-lg">
+                    <i class="fa-solid fa-play mr-2"></i> Play
+                </button>
+            </a>
 
-</div>
+            <a href="{{.DownloadLink}}">
+                <button class="bg-gray-700 hover:bg-gray-600 px-8 py-3 rounded font-bold text-lg shadow-lg">
+                    <i class="fa-solid fa-download mr-2"></i> Download
+                </button>
+            </a>
 
-<!-- VLC -->
-<div class="mt-10 glass rounded-xl p-6">
-    <h3 class="text-lg font-bold text-orange-400 mb-3">
-        Watch in VLC
-    </h3>
+        </div>
+    </div>
 
-    <p class="text-white/60 mb-4">
-        If streaming is slow, open directly in VLC player.
+</section>
+
+<!-- VLC SECTION -->
+<section class="px-6 py-10 bg-black">
+    <h3 class="text-xl font-bold text-red-500 mb-4">Watch in VLC</h3>
+    <p class="text-gray-400 mb-4">
+        Having buffering issues? Open directly in VLC for smooth playback.
     </p>
 
     <a href="#" onclick="this.href = window.location.href + '&redirect=vlc'">
-        <button class="bg-orange-500 hover:bg-orange-400
-        transition-all duration-300 px-6 py-3 rounded-lg font-semibold text-black">
-            <i class="fa-solid fa-circle-play mr-2"></i>
+        <button class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded font-semibold">
             Open in VLC
         </button>
     </a>
-</div>
+</section>
 
-<!-- FOOTER -->
-<div class="text-center text-white/40 text-xs mt-10">
-    Powered by {{.AppName}}
-</div>
-
-</div>
+<footer class="text-center text-gray-600 py-6 text-sm bg-black">
+    © {{.AppName}} Streaming Service
+</footer>
 
 </body>
 </html>
