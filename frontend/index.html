@@ -84,36 +84,74 @@
                         <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-mobile-screen text-blue-400"></i> For Mobile Users
                         </h4>
-                        <p class="text-gray-400 text-sm mb-6">
+                        <p class="text-gray-400 text-sm mb-5">
                             If the browser video is buffering or showing a black screen, play it directly in your phone's VLC app.
                         </p>
                     </div>
                     
-                    <a href="#" onclick="this.href = window.location.href + '&redirect=vlc'" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-4">
+                    <a href="#" onclick="this.href = window.location.href + '&redirect=vlc'" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-5">
                         <i class="fa-solid fa-circle-play text-xl"></i> Open in VLC App
                     </a>
 
-                    <p class="text-gray-500 text-xs mb-2">If the button fails, copy the link below and paste it in VLC > New Stream:</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="streamLinkInputMobile" value="" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-400 outline-none" readonly>
-                        <button id="copyBtnMobile" onclick="copyVlcLink('streamLinkInputMobile', 'copyBtnMobile')" class="shrink-0 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-white font-semibold text-sm flex items-center gap-2">
-                            <i class="fa-regular fa-copy"></i> Copy
-                        </button>
+                    <div class="mt-auto border-t border-white/5 pt-5">
+                        <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">If the button fails:</p>
+                        
+                        <ul class="space-y-3 text-sm text-gray-400 mb-4">
+                            <li class="flex items-start gap-3">
+                                <span class="bg-orange-500/20 text-orange-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(249,115,22,0.2)]">1</span>
+                                <span class="mt-0.5"><b class="text-white">Copy</b> the stream link below.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="bg-orange-500/20 text-orange-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(249,115,22,0.2)]">2</span>
+                                <span class="mt-0.5">Go to the <b class="text-white">"More"</b> option or find Stream option in VLC app.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="bg-orange-500/20 text-orange-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(249,115,22,0.2)]">3</span>
+                                <span class="mt-0.5">Click <b class="text-white">"New Stream"</b> and paste the link.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="bg-orange-500/20 text-orange-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(249,115,22,0.2)]">4</span>
+                                <span class="mt-0.5 text-orange-300 font-medium tracking-wide">Grab popcorn & Enjoy! 🍿</span>
+                            </li>
+                        </ul>
+
+                        <div class="flex gap-2">
+                            <input type="text" id="streamLinkInputMobile" value="" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-400 outline-none" readonly>
+                            <button id="copyBtnMobile" onclick="copyVlcLink('streamLinkInputMobile', 'copyBtnMobile')" class="shrink-0 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-white font-semibold text-sm flex items-center gap-2">
+                                <i class="fa-regular fa-copy"></i> Copy
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-black/40 rounded-xl p-6 border border-white/5">
-                    <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-desktop text-purple-400"></i> For Windows / PC Users
-                    </h4>
-                    <p class="text-gray-400 text-sm mb-4">
-                        PC browsers don't support <b>.mkv</b> format. Follow these steps:
-                    </p>
-                    <ol class="text-gray-400 text-sm space-y-2 mb-5 list-decimal list-inside">
-                        <li><span class="text-white">Copy</span> the stream link below.</li>
-                        <li>Open VLC on your PC and press <kbd class="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono text-xs border border-white/20">Ctrl + N</kbd>.</li>
-                        <li><span class="text-white">Paste</span> the link and click Play.</li>
-                    </ol>
+                <div class="bg-black/40 rounded-xl p-6 border border-white/5 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-desktop text-purple-400"></i> For Windows / PC Users
+                        </h4>
+                        <p class="text-gray-400 text-sm mb-5">
+                            PC browsers don't support <b>.mkv</b> format. Follow these simple steps:
+                        </p>
+                        
+                        <ul class="space-y-3 text-sm text-gray-400 mb-6">
+                            <li class="flex items-start gap-3">
+                                <span class="bg-purple-500/20 text-purple-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(168,85,247,0.2)]">1</span>
+                                <span class="mt-0.5"><b class="text-white">Copy</b> the stream link below.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="bg-purple-500/20 text-purple-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(168,85,247,0.2)]">2</span>
+                                <span class="mt-0.5">Open VLC on your PC and press <kbd class="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono text-xs border border-white/20">Ctrl + N</kbd>.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="bg-purple-500/20 text-purple-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(168,85,247,0.2)]">3</span>
+                                <span class="mt-0.5"><b class="text-white">Paste</b> the link and click Play.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="bg-purple-500/20 text-purple-400 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-[0_0_10px_rgba(168,85,247,0.2)]">4</span>
+                                <span class="mt-0.5 text-purple-300 font-medium tracking-wide">Grab popcorn & Enjoy! 🍿</span>
+                            </li>
+                        </ul>
+                    </div>
                     
                     <div class="flex gap-2 mt-auto">
                         <input type="text" id="streamLinkInputPC" value="" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-400 outline-none" readonly>
