@@ -88,9 +88,18 @@
                             If the browser video is buffering or showing a black screen, play it directly in your phone's VLC app.
                         </p>
                     </div>
-                    <a href="#" onclick="this.href = window.location.href + '&redirect=vlc'" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+                    
+                    <a href="#" onclick="this.href = window.location.href + '&redirect=vlc'" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-4">
                         <i class="fa-solid fa-circle-play text-xl"></i> Open in VLC App
                     </a>
+
+                    <p class="text-gray-500 text-xs mb-2">If the button fails, copy the link below and paste it in VLC > New Stream:</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="streamLinkInputMobile" value="" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-400 outline-none" readonly>
+                        <button id="copyBtnMobile" onclick="copyVlcLink('streamLinkInputMobile', 'copyBtnMobile')" class="shrink-0 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-white font-semibold text-sm flex items-center gap-2">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-black/40 rounded-xl p-6 border border-white/5">
@@ -106,9 +115,9 @@
                         <li><span class="text-white">Paste</span> the link and click Play.</li>
                     </ol>
                     
-                    <div class="flex gap-2">
-                        <input type="text" id="streamLinkInput" value="" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-400 outline-none" readonly>
-                        <button id="copyBtn" onclick="copyVlcLink()" class="shrink-0 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-white font-semibold text-sm flex items-center gap-2">
+                    <div class="flex gap-2 mt-auto">
+                        <input type="text" id="streamLinkInputPC" value="" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-400 outline-none" readonly>
+                        <button id="copyBtnPC" onclick="copyVlcLink('streamLinkInputPC', 'copyBtnPC')" class="shrink-0 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-white font-semibold text-sm flex items-center gap-2">
                             <i class="fa-regular fa-copy"></i> Copy
                         </button>
                     </div>
@@ -120,21 +129,22 @@
     </main>
 
     <script>
-        // Set the full correct URL inside the input box when page loads
+        // Set the full correct URL inside both input boxes when page loads
         window.onload = function() {
             var fullUrl = window.location.origin + "{{.StreamLink}}";
-            document.getElementById("streamLinkInput").value = fullUrl;
+            document.getElementById("streamLinkInputMobile").value = fullUrl;
+            document.getElementById("streamLinkInputPC").value = fullUrl;
         }
 
-        // Copy button function
-        function copyVlcLink() {
-            var copyText = document.getElementById("streamLinkInput");
+        // Dynamic Copy function for both buttons
+        function copyVlcLink(inputId, btnId) {
+            var copyText = document.getElementById(inputId);
             copyText.select();
             copyText.setSelectionRange(0, 99999); // For mobile devices
             navigator.clipboard.writeText(copyText.value);
             
             // Change button text to "Copied!" for 2 seconds
-            var btn = document.getElementById("copyBtn");
+            var btn = document.getElementById(btnId);
             var originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-check text-green-400"></i> Copied!';
             btn.classList.add("text-green-400");
