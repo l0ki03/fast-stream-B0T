@@ -104,11 +104,12 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 
 	// ✅ Download Link (Correct Format)
 	downloadLink := fmt.Sprintf(
-		"%s/download/%d/%s",
-		params.Cfg.FQDN,
-		messageId,
-		msgHash,
-	)
+    "%s/stream/%d/%d/%s?d=1",
+    params.Cfg.FQDN,
+    params.Cfg.DB_CHANNEL_ID,
+    messageId,
+    msgHash,
+)
 
 	// 🔹 Deduct Credit
 	bc.dbUser, err = bc.userService.DecrementCredits(
