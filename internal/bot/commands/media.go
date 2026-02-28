@@ -1,23 +1,3 @@
-package commands
-
-import (
-	"fmt"
-	"log/slog"
-	"time"
-
-	"github.com/biisal/fast-stream-bot/config"
-	botutils "github.com/biisal/fast-stream-bot/internal/bot/bot-utils"
-	"github.com/gotd/td/telegram"
-	"github.com/gotd/td/telegram/message/markup"
-	"github.com/gotd/td/tg"
-)
-
-type MediaForwardParams struct {
-	Cfg    *config.Config
-	Update *tg.UpdateNewMessage
-	Client *telegram.Client
-}
-
 func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, error) {
 
 	// 🔹 Credit Check
@@ -92,7 +72,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		(*tg.UpdateMessageID).
 		ID
 
-	// 🔥 Generate Links (FIXED: Watch and Download routes)
+	// ✅ Correct Watch Link
 	streamLink := fmt.Sprintf(
 		"%s/watch/%d?hash=%s",
 		params.Cfg.FQDN,
@@ -100,9 +80,9 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msgHash,
 	)
 
-	// यहाँ /watch/ को हटाकर /download/ कर दिया गया है
+	// ✅ Correct Download Link (FIXED FORMAT)
 	downloadLink := fmt.Sprintf(
-		"%s/download/%d?hash=%s",
+		"%s/download/%d/%s",
 		params.Cfg.FQDN,
 		messageId,
 		msgHash,
@@ -130,7 +110,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msg += fmt.Sprintf("\n\n💳 Credits left: %d", bc.dbUser.Credit)
 	}
 
-	// 🔥 TWO BUTTONS (Separate Rows for Mobile UI)
+	// 🔥 Buttons
 	btn := markup.InlineKeyboard(
 		markup.Row(
 			markup.URL("▶ Watch Now", streamLink),
