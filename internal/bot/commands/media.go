@@ -92,7 +92,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		(*tg.UpdateMessageID).
 		ID
 
-	// 🔥 Generate Links (Fix for Direct Download)
+	// 🔥 Generate Links (FIXED: Watch and Download routes)
 	streamLink := fmt.Sprintf(
 		"%s/watch/%d?hash=%s",
 		params.Cfg.FQDN,
@@ -100,8 +100,9 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msgHash,
 	)
 
+	// यहाँ /watch/ को हटाकर /download/ कर दिया गया है
 	downloadLink := fmt.Sprintf(
-		"%s/watch/%d?hash=%s&d=1",
+		"%s/download/%d?hash=%s",
 		params.Cfg.FQDN,
 		messageId,
 		msgHash,
