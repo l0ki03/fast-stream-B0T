@@ -36,8 +36,8 @@ func SetUpRouters(worker *bot.Worker, Cfg config.Config, shortner shortner.Short
 	mux.Handle(GET("/watch/{channelId}/{messageId}"), h.HomeStream())
 
 	// 🔥 DOWNLOAD ROUTES (NEW ADDED)
-	mux.Handle(GET("/download/{messageId}/{hash}"), h.DownloadFile())
-	mux.Handle(GET("/download/{channelId}/{messageId}/{hash}"), h.DownloadFile())
+	mux.Handle(GET("/stream/{messageId}/{hash}"), h.ServerFile())
+mux.Handle(GET("/stream/{channelId}/{messageId}/{hash}"), h.ServerFile())
 
 	// 🔹 API
 	mux.Handle(GET("/api/v1/hash/{channelId}/{messageId}"), h.MakeHashByChanMsgID())
