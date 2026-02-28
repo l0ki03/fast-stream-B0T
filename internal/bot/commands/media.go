@@ -92,7 +92,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		(*tg.UpdateMessageID).
 		ID
 
-	// 🔥 Generate Links
+	// 🔥 Generate Links (Fix for Direct Download)
 	streamLink := fmt.Sprintf(
 		"%s/watch/%d?hash=%s",
 		params.Cfg.FQDN,
@@ -101,7 +101,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 	)
 
 	downloadLink := fmt.Sprintf(
-		"%s/download/%d?hash=%s",
+		"%s/watch/%d?hash=%s&d=1",
 		params.Cfg.FQDN,
 		messageId,
 		msgHash,
@@ -129,10 +129,12 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msg += fmt.Sprintf("\n\n💳 Credits left: %d", bc.dbUser.Credit)
 	}
 
-	// 🔥 TWO BUTTONS
+	// 🔥 TWO BUTTONS (Separate Rows for Mobile UI)
 	btn := markup.InlineKeyboard(
 		markup.Row(
 			markup.URL("▶ Watch Now", streamLink),
+		),
+		markup.Row(
 			markup.URL("⬇ Download Now", downloadLink),
 		),
 	)
