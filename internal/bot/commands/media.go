@@ -1,3 +1,23 @@
+package commands
+
+import (
+	"fmt"
+	"log/slog"
+	"time"
+
+	"github.com/biisal/fast-stream-bot/config"
+	botutils "github.com/biisal/fast-stream-bot/internal/bot/bot-utils"
+	"github.com/gotd/td/telegram"
+	"github.com/gotd/td/telegram/message/markup"
+	"github.com/gotd/td/tg"
+)
+
+type MediaForwardParams struct {
+	Cfg    *config.Config
+	Update *tg.UpdateNewMessage
+	Client *telegram.Client
+}
+
 func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, error) {
 
 	// 🔹 Credit Check
@@ -5,6 +25,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		if bc.dbUser.Credit < params.Cfg.MIN_CREDITS_REQUIRED {
 
 			referUrl := botutils.GetReferLink(bc.userInfo.Username, bc.userInfo.ID)
+
 			now := time.Now()
 			nextMidnight := time.Date(
 				now.Year(),
@@ -33,6 +54,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 
 	// 🔹 Get Media
 	m := params.Update.Message.(*tg.Message)
+
 	fromPeer := &tg.InputPeerUser{
 		UserID:     bc.userInfo.ID,
 		AccessHash: bc.userInfo.AccessHash,
@@ -72,7 +94,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		(*tg.UpdateMessageID).
 		ID
 
-	// ✅ Correct Watch Link
+	// ✅ Watch Link
 	streamLink := fmt.Sprintf(
 		"%s/watch/%d?hash=%s",
 		params.Cfg.FQDN,
@@ -80,7 +102,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msgHash,
 	)
 
-	// ✅ Correct Download Link (FIXED FORMAT)
+	// ✅ Download Link (Correct Format)
 	downloadLink := fmt.Sprintf(
 		"%s/download/%d/%s",
 		params.Cfg.FQDN,
@@ -142,7 +164,8 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 	// 🔹 Delete user original message
 	if bc.userInfo.ID != params.Cfg.ADMIN_ID {
 		_, _ = params.Client.API().
-			MessagesDeleteMessages(bc.ctx,
+			MessagesDeleteMessages(
+				bc.ctx,
 				&tg.MessagesDeleteMessagesRequest{
 					Revoke: true,
 					ID:     []int{m.ID},
