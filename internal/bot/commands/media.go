@@ -52,8 +52,16 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		}
 	}
 
-	// 🔹 Get Media
-	m := params.Update.Message.(*tg.Message)
+	// 🔹 Safe Message Cast
+	if params.Update == nil || params.Update.Message == nil {
+		return nil, fmt.Errorf("invalid update or message")
+	}
+
+	msgObj, ok := params.Update.Message.(*tg.Message)
+	if !ok {
+		return nil, fmt.Errorf("not a valid tg.Message")
+	}
+	m := msgObj
 
 	fromPeer := &tg.InputPeerUser{
 		UserID:     bc.userInfo.ID,
@@ -83,16 +91,28 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		To(channelInputPeer.InputPeer()).
 		ForwardIDs(fromPeer, m.ID).
 		Send(bc.ctx)
-
 	if err != nil {
 		slog.Error("Forward failed", "error", err)
 		return nil, err
 	}
 
-	messageId := fUpdate.(*tg.Updates).
-		Updates[0].
-		(*tg.UpdateMessageID).
-		ID
+	// 🔹 Safe Message ID Extraction
+	updates, ok := fUpdate.(*tg.Updates)
+	if !ok {
+		return nil, fmt.Errorf("invalid update type")
+	}
+
+	var messageId int
+	for _, u := range updates.Updates {
+		if msgID, ok := u.(*tg.UpdateMessageID); ok {
+			messageId = msgID.ID
+			break
+		}
+	}
+
+	if messageId == 0 {
+		return nil, fmt.Errorf("message ID not found")
+	}
 
 	// ✅ Watch Link
 	streamLink := fmt.Sprintf(
@@ -102,14 +122,14 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msgHash,
 	)
 
-	// ✅ Download Link (Correct Format)
+	// ✅ Download Link
 	downloadLink := fmt.Sprintf(
-    "%s/stream/%d/%d/%s?d=1",
-    params.Cfg.FQDN,
-    params.Cfg.DB_CHANNEL_ID,
-    messageId,
-    msgHash,
-)
+		"%s/stream/%d/%d/%s?d=1",
+		params.Cfg.FQDN,
+		params.Cfg.DB_CHANNEL_ID,
+		messageId,
+		msgHash,
+	)
 
 	// 🔹 Deduct Credit
 	bc.dbUser, err = bc.userService.DecrementCredits(
@@ -133,7 +153,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msg += fmt.Sprintf("\n\n💳 Credits left: %d", bc.dbUser.Credit)
 	}
 
-	// 🔥 Buttons
 	btn := markup.InlineKeyboard(
 		markup.Row(
 			markup.URL("▶ Watch Now", streamLink),
@@ -162,7 +181,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 	bc.dbUser, _ = bc.userService.
 		IncrementTotalLinkCount(bc.ctx, bc.dbUser.ID)
 
-	// 🔹 Delete user original message
+	// 🔹 Delete original message (if not admin)
 	if bc.userInfo.ID != params.Cfg.ADMIN_ID {
 		_, _ = params.Client.API().
 			MessagesDeleteMessages(
