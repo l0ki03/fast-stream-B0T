@@ -27,17 +27,13 @@ func SetUpRouters(worker *bot.Worker, Cfg config.Config, shortner shortner.Short
 
 	mux.HandleFunc(GET("/ping"), h.Ping())
 
-	// 🔹 STREAM ROUTES
+	// 🔹 STREAM ROUTES (ONLY ONCE)
 	mux.Handle(GET("/stream/{messageId}/{hash}"), h.ServerFile())
 	mux.Handle(GET("/stream/{channelId}/{messageId}/{hash}"), h.ServerFile())
 
 	// 🔹 WATCH ROUTES
 	mux.Handle(GET("/watch/{messageId}"), h.HomeStream())
 	mux.Handle(GET("/watch/{channelId}/{messageId}"), h.HomeStream())
-
-	// 🔥 DOWNLOAD ROUTES (NEW ADDED)
-	mux.Handle(GET("/stream/{messageId}/{hash}"), h.ServerFile())
-mux.Handle(GET("/stream/{channelId}/{messageId}/{hash}"), h.ServerFile())
 
 	// 🔹 API
 	mux.Handle(GET("/api/v1/hash/{channelId}/{messageId}"), h.MakeHashByChanMsgID())
