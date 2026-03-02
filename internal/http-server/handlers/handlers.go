@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/biisal/fast-stream-bot/config"
 	"github.com/biisal/fast-stream-bot/internal/bot"
@@ -55,7 +54,6 @@ func (h *StreamHandler) ServerFile() http.HandlerFunc {
 		}
 		defer h.Worker.ReleaseWorker(workerBot)
 
-		// ✅ FIXED: use Background context instead of r.Context()
 		fileMsg, err := botutils.GetChannelMessage(
 			context.Background(),
 			channelID,
@@ -81,7 +79,6 @@ func (h *StreamHandler) ServerFile() http.HandlerFunc {
 			return
 		}
 
-		// ✅ FIXED: Background context
 		reader := stream.NewTgFileReader(
 			workerBot.Client.API(),
 			context.Background(),
@@ -163,7 +160,6 @@ func (h *StreamHandler) HomeStream() http.HandlerFunc {
 		}
 		defer h.Worker.ReleaseWorker(client)
 
-		// ✅ FIXED: Background context
 		fileMsg, err := botutils.GetChannelMessage(
 			context.Background(),
 			channelID,
@@ -227,7 +223,6 @@ func (h *StreamHandler) MakeHashByChanMsgID() http.HandlerFunc {
 		}
 		defer h.Worker.ReleaseWorker(workerBot)
 
-		// ✅ FIXED: Background context
 		fileMsg, err := botutils.GetChannelMessage(
 			context.Background(),
 			channelId64,
