@@ -27,6 +27,54 @@ type StreamHandler struct {
 	Shortner shortner.Shortner
 }
 
+////////////////////////////////////////////////////////////
+// LANDING PAGE (FIXED - REQUIRED FOR BUILD)
+////////////////////////////////////////////////////////////
+
+func (h *StreamHandler) LandingPage() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		type LandingData struct {
+			AppName string
+		}
+
+		data := LandingData{
+			AppName: h.Cfg.APP_NAME,
+		}
+
+		w.Header().Set("Content-Type", "text/html")
+		w.WriteHeader(http.StatusOK)
+
+		html := `
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<title>` + data.AppName + `</title>
+			<style>
+				body {
+					font-family: Arial, sans-serif;
+					background: #111;
+					color: #fff;
+					text-align: center;
+					padding-top: 100px;
+				}
+				h1 { color: #00ffcc; }
+			</style>
+		</head>
+		<body>
+			<h1>` + data.AppName + ` 🚀</h1>
+			<p>Server is running successfully.</p>
+		</body>
+		</html>`
+
+		_, _ = w.Write([]byte(html))
+	}
+}
+
+////////////////////////////////////////////////////////////
+// FILE STREAM
+////////////////////////////////////////////////////////////
+
 func (h *StreamHandler) ServerFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -36,7 +84,6 @@ func (h *StreamHandler) ServerFile() http.HandlerFunc {
 			h.Cfg.DB_CHANNEL_ID,
 		)
 		if err != nil {
-			slog.Error("failed to parse messageId and channelId", "error", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -48,7 +95,6 @@ func (h *StreamHandler) ServerFile() http.HandlerFunc {
 
 		workerBot, err := h.Worker.HireFreeWorker()
 		if workerBot == nil {
-			slog.Error("failed to get bots", "error", err)
 			http.Error(w, "No worker available", http.StatusInternalServerError)
 			return
 		}
@@ -61,20 +107,17 @@ func (h *StreamHandler) ServerFile() http.HandlerFunc {
 			workerBot.Client.API(),
 		)
 		if err != nil {
-			slog.Error("Failed to get file message", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		file, err := botutils.GetMediaFromMessage(fileMsg)
 		if err != nil {
-			slog.Error("Failed to get media from message", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		if !botutils.CheckFileHash(file, hash) {
-			slog.Error("Invalid hash", "hash", hash)
 			http.Error(w, "Invalid hash", http.StatusForbidden)
 			return
 		}
@@ -88,7 +131,6 @@ func (h *StreamHandler) ServerFile() http.HandlerFunc {
 		)
 
 		if err = reader.SetupStream(r, w, isDownload); err != nil {
-			slog.Error("Failed to setup stream", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -97,36 +139,20 @@ func (h *StreamHandler) ServerFile() http.HandlerFunc {
 
 		if _, err = io.CopyBuffer(w, reader, buffer); err != nil {
 
-			if errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ECONNRESET) {
-				slog.Info("client closed connection")
+			if errors.Is(err, syscall.EPIPE) ||
+				errors.Is(err, syscall.ECONNRESET) ||
+				errors.Is(err, io.EOF) {
 				return
 			}
 
-			if errors.Is(err, io.EOF) {
-				slog.Info("END OF FILE")
-				return
-			}
-
-			slog.Error("Failed to copy file", "error", err)
 			return
 		}
 	}
 }
 
-func renderHTML(w http.ResponseWriter, htmlTemplate string, data any) {
-	t, err := template.ParseFiles("frontend/" + htmlTemplate)
-	if err != nil {
-		slog.Error("Failed to parse template", "error", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = t.Execute(w, data)
-	if err != nil {
-		slog.Error("Failed to execute template", "error", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
+////////////////////////////////////////////////////////////
+// HOME STREAM PAGE
+////////////////////////////////////////////////////////////
 
 func (h *StreamHandler) HomeStream() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -200,6 +226,10 @@ func (h *StreamHandler) HomeStream() http.HandlerFunc {
 	}
 }
 
+////////////////////////////////////////////////////////////
+// HASH API
+////////////////////////////////////////////////////////////
+
 func (h *StreamHandler) MakeHashByChanMsgID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -257,9 +287,26 @@ func (h *StreamHandler) MakeHashByChanMsgID() http.HandlerFunc {
 	}
 }
 
+////////////////////////////////////////////////////////////
+// PING
+////////////////////////////////////////////////////////////
+
 func (h *StreamHandler) Ping() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "pong")
 	}
+}
+
+////////////////////////////////////////////////////////////
+// TEMPLATE RENDER
+////////////////////////////////////////////////////////////
+
+func renderHTML(w http.ResponseWriter, htmlTemplate string, data any) {
+	t, err := template.ParseFiles("frontend/" + htmlTemplate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	_ = t.Execute(w, data)
 }
