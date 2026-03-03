@@ -3,6 +3,7 @@ package config
 
 import (
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -36,31 +37,61 @@ type AppConfig struct {
 type Config struct {
 	AppConfig
 
-	BOT_TOKENS_STRING     string `env:"BOT_TOKENS" env-required:"true"`
-	BOT_TOKENS            []string
-	APP_KEY               int    `env:"APP_KEY" env-required:"true"`
-	APP_HASH              string `env:"APP_HASH" env-required:"true"`
-	ADMIN_ID              int64  `env:"ADMIN_ID" env-required:"true"`
-	DB_CHANNEL_ID         int64  `env:"DB_CHANNEL_ID" env-required:"true"`
-	MAIN_CHANNEL_USERNAME string `env:"MAIN_CHANNEL_USERNAME" env-required:"true"`
-	HTTP_PORT             int    `env:"HTTP_PORT"`
-	HTTP_SCHEME           string
-	FQDN                  string `env:"FQDN"`
-	ENVIRONMENT           string `env:"ENVIRONMENT"`
-	LOG_CHANNEL_ID        int64  `env:"LOG_CHANNEL_ID"`
-	MAIN_CHANNEL_ID       int64  `env:"MAIN_CHANNEL_ID"`
-	DBSTRING              string `env:"DBSTRING" env-required:"true"`
+	BOT_TOKENS_STRING string `env:"BOT_TOKENS" env-required:"true"`
+	BOT_TOKENS        []string
 
-	ShortnerConfig
+	APP_KEY       int    `env:"APP_KEY" env-required:"true"`
+	APP_HASH      string `env:"APP_HASH" env-required:"true"`
+	ADMIN_ID      int64  `env:"ADMIN_ID" env-required:"true"`
+	DB_CHANNEL_ID int64  `env:"DB_CHANNEL_ID" env-required:"true"`
+
+	MAIN_CHANNEL_USERNAME string `env:"MAIN_CHANNEL_USERNAME" env-required:"true"`
+	MAIN_CHANNEL_ID       int64  `env:"MAIN_CHANNEL_ID"`
+
+	LOG_CHANNEL_ID int64 `env:"LOG_CHANNEL_ID"`
+
+	HTTP_PORT   int    `env:"HTTP_PORT"`
+	HTTP_SCHEME string
+	FQDN        string `env:"FQDN"`
+	ENVIRONMENT string `env:"ENVIRONMENT"`
+
+	DBSTRING string `env:"DBSTRING" env-required:"true"`
 
 	REDIS_DBSTRING string `env:"REDIS_DBSTRING" env-required:"true"`
-	REF            bool
+
+	// 🔥 NEW: Multi Channel Force Subscribe
+	FORCE_SUB_CHANNELS_STRING string  `env:"FORCE_SUB_CHANNELS"`
+	FORCE_SUB_CHANNELS        []int64
+
+	REF bool
+
+	ShortnerConfig
 }
 
 func perseTokens(tokenString string) (s []string) {
-	for token := range strings.SplitSeq(tokenString, " ") {
+	for _, token := range strings.Split(tokenString, " ") {
 		s = append(s, strings.TrimSpace(token))
 	}
+	return
+}
+
+// 🔥 NEW: Parse Force Subscribe Channels
+func parseForceChannels(channelString string) (channels []int64) {
+	if channelString == "" {
+		return
+	}
+
+	parts := strings.Split(channelString, ",")
+
+	for _, ch := range parts {
+		id, err := strconv.ParseInt(strings.TrimSpace(ch), 10, 64)
+		if err != nil {
+			log.Printf("Invalid FORCE_SUB_CHANNEL ID: %s", ch)
+			continue
+		}
+		channels = append(channels, id)
+	}
+
 	return
 }
 
@@ -91,15 +122,20 @@ func MustLoad(configPath string) Config {
 	}
 
 	setDefault(&appCfg)
+
 	if err := godotenv.Load(appCfg.ENV_FILE); err != nil {
 		log.Printf("Warning: Could not load env file %s: %v", appCfg.ENV_FILE, err)
 	}
 
 	if err := cleanenv.ReadEnv(&cfg); err != nil {
-		log.Fatalf("failed to read environment variables: %v\nHint: check your .env file for missing required variables", err)
+		log.Fatalf("failed to read environment variables: %v\nHint: check your .env file", err)
 	}
+
 	cfg.AppConfig = appCfg
 	cfg.BOT_TOKENS = perseTokens(cfg.BOT_TOKENS_STRING)
+
+	// 🔥 Parse Force Subscribe Channels
+	cfg.FORCE_SUB_CHANNELS = parseForceChannels(cfg.FORCE_SUB_CHANNELS_STRING)
 
 	if cfg.ENVIRONMENT == "" {
 		cfg.ENVIRONMENT = ENVIRONMENT_PROD
