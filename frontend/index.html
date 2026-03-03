@@ -32,7 +32,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Customizing Plyr Theme to match your UI */
         :root {
             --plyr-color-main: #a855f7;
             --plyr-video-background: #000;
@@ -101,7 +100,7 @@
                         </p>
                     </div>
                     
-                    <a id="vlcMobileBtn" href="#" onclick="openVlcWithLoading(event, this)" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-5">
+                    <a id="vlcMobileBtn" href="#" onclick="showVlcLoading(this)" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-5">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/3/38/VLC_icon.png" alt="VLC" class="w-6 h-6"> 
                         <span>Open in VLC App</span>
                     </a>
@@ -190,51 +189,49 @@
     </script>
 
     <script>
-        // Set the full correct URL inside both input boxes
+        // Set URLs on page load
         window.onload = function() {
             var rawLink = "{{.StreamLink}}";
             var fullUrl = rawLink;
             
-            // Bug Fix: Check if URL is already absolute before adding window.location.origin
+            // Format URL correctly
             if (!rawLink.startsWith('http')) {
-                // Ensure proper formatting whether rawLink starts with '/' or not
                 fullUrl = window.location.origin + (rawLink.startsWith('/') ? '' : '/') + rawLink;
             }
 
-            // Set inputs
+            // Set input box values
             document.getElementById("streamLinkInputMobile").value = fullUrl;
             document.getElementById("streamLinkInputPC").value = fullUrl;
+            
+            // FIX: Set the direct vlc:// link right into the anchor tag href
+            var vlcBtn = document.getElementById("vlcMobileBtn");
+            if(vlcBtn) {
+                vlcBtn.href = "vlc://" + fullUrl;
+            }
         }
 
-        // VLC Button Loading Animation Logic
-        function openVlcWithLoading(event, btn) {
-            event.preventDefault(); // Stop default anchor behavior
-
-            var fullUrl = document.getElementById("streamLinkInputMobile").value;
+        // Only handle UI (Animation) here, let the browser handle the href navigation natively
+        function showVlcLoading(btn) {
             var originalHTML = btn.innerHTML;
 
             // Show loading state
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i> <span>Opening VLC...</span>';
             btn.classList.add("opacity-80", "pointer-events-none"); // Prevent double clicks
 
-            // Trigger VLC Deep Link
-            window.location.href = "vlc://" + fullUrl;
-
-            // Reset button after 3.5 seconds
+            // Reset button after 10 seconds
             setTimeout(function() {
                 btn.innerHTML = originalHTML;
                 btn.classList.remove("opacity-80", "pointer-events-none");
-            }, 30000);
+            }, 10000);
         }
 
-        // Dynamic Copy function for both buttons
+        // Dynamic Copy function
         function copyVlcLink(inputId, btnId) {
             var copyText = document.getElementById(inputId);
             copyText.select();
-            copyText.setSelectionRange(0, 99999); // For mobile devices
+            copyText.setSelectionRange(0, 99999); 
             navigator.clipboard.writeText(copyText.value);
             
-            // Change button text to "Copied!" for 2 seconds
             var btn = document.getElementById(btnId);
             var originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-check text-green-400"></i> Copied!';
