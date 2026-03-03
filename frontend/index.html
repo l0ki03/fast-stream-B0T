@@ -100,7 +100,7 @@
                         </p>
                     </div>
                     
-                    <a id="vlcMobileBtn" href="#" onclick="showVlcLoading(this)" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-5">
+                    <a id="vlcMobileBtn" href="#" onclick="openVlcWithLoading(event, this)" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 transition-all text-black font-bold w-full shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-5">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/3/38/VLC_icon.png" alt="VLC" class="w-6 h-6"> 
                         <span>Open in VLC App</span>
                     </a>
@@ -189,43 +189,43 @@
     </script>
 
     <script>
-        // Set URLs on page load
         window.onload = function() {
             var rawLink = "{{.StreamLink}}";
             var fullUrl = rawLink;
             
-            // Format URL correctly
             if (!rawLink.startsWith('http')) {
                 fullUrl = window.location.origin + (rawLink.startsWith('/') ? '' : '/') + rawLink;
             }
 
-            // Set input box values
+            // Set input box values only
             document.getElementById("streamLinkInputMobile").value = fullUrl;
             document.getElementById("streamLinkInputPC").value = fullUrl;
-            
-            // FIX: Set the direct vlc:// link right into the anchor tag href
-            var vlcBtn = document.getElementById("vlcMobileBtn");
-            if(vlcBtn) {
-                vlcBtn.href = "vlc://" + fullUrl;
-            }
         }
 
-        // Only handle UI (Animation) here, let the browser handle the href navigation natively
-        function showVlcLoading(btn) {
+        // Yeh function ab frontend loading aur aapke backend redirect dono ko handle karega
+        function openVlcWithLoading(event, btn) {
+            event.preventDefault(); // Default click ko rokna
+            
             var originalHTML = btn.innerHTML;
 
-            // Show loading state
+            // 1. Loading UI dikhana
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i> <span>Opening VLC...</span>';
-            btn.classList.add("opacity-80", "pointer-events-none"); // Prevent double clicks
+            btn.classList.add("opacity-80", "pointer-events-none");
 
-            // Reset button after 10 seconds
+            // 2. Aapka Backend Logic Call Karna (URL mein &redirect=vlc bhejna)
+            var currentUrl = window.location.href;
+            var redirectUrl = currentUrl.includes('redirect=vlc') ? currentUrl : currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'redirect=vlc';
+            
+            // Server par bhejna, wahan se Go backend VLC play karwa dega
+            window.location.href = redirectUrl;
+
+            // 3. Button ko 10 second baad normal karna
             setTimeout(function() {
                 btn.innerHTML = originalHTML;
                 btn.classList.remove("opacity-80", "pointer-events-none");
             }, 10000);
         }
 
-        // Dynamic Copy function
         function copyVlcLink(inputId, btnId) {
             var copyText = document.getElementById(inputId);
             copyText.select();
