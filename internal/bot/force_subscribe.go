@@ -3,26 +3,38 @@ package bot
 import (
 	"context"
 	"fmt"
+	"log/slog"
+
+	"github.com/gotd/td/tg"
 )
 
-type ForceSubscribe struct {
-	API BotAPI
-}
-
-func (f *ForceSubscribe) IsJoined(userID int64, channels []int64) bool {
+// Check if user joined all required channels
+func IsUserJoined(
+	ctx context.Context,
+	api *tg.Client,
+	userID int64,
+	channels []int64,
+) bool {
 
 	for _, channelID := range channels {
 
-		member, err := f.API.GetChatMember(context.Background(), channelID, userID)
+		_, err := api.ChannelsGetParticipant(ctx, &tg.ChannelsGetParticipantRequest{
+			Channel: &tg.InputChannel{
+				ChannelID:  channelID,
+				AccessHash: 0,
+			},
+			Participant: &tg.InputPeerUser{
+				UserID:     userID,
+				AccessHash: 0,
+			},
+		})
+
 		if err != nil {
-			return false
-		}
-
-		status := member.GetStatus()
-
-		if status != "member" &&
-			status != "administrator" &&
-			status != "creator" {
+			slog.Info("User not joined channel",
+				"user", userID,
+				"channel", channelID,
+				"error", err,
+			)
 			return false
 		}
 	}
@@ -30,35 +42,53 @@ func (f *ForceSubscribe) IsJoined(userID int64, channels []int64) bool {
 	return true
 }
 
-func (f *ForceSubscribe) SendJoinMessage(userID int64, channels []int64) {
+// Send force subscribe message
+func SendForceSubscribeMessage(
+	ctx context.Context,
+	api *tg.Client,
+	userID int64,
+	channels []int64,
+) error {
 
 	text := "🚨 You must join all required channels to continue:\n\n"
 
-	var keyboard [][]InlineKeyboardButton
+	var rows []tg.KeyboardButtonRow
 
-	for _, ch := range channels {
+	for _, channelID := range channels {
 
-		chat, err := f.API.GetChat(context.Background(), ch)
-		if err != nil {
-			continue
-		}
+		link := fmt.Sprintf("https://t.me/c/%d", -channelID)
 
-		link := fmt.Sprintf("https://t.me/%s", chat.Username)
-
-		btn := InlineKeyboardButton{
-			Text: "Join " + chat.Title,
+		button := &tg.KeyboardButtonURL{
+			Text: "Join Channel",
 			URL:  link,
 		}
 
-		keyboard = append(keyboard, []InlineKeyboardButton{btn})
+		rows = append(rows, tg.KeyboardButtonRow{
+			Buttons: []tg.KeyboardButtonClass{button},
+		})
 	}
 
-	checkBtn := InlineKeyboardButton{
+	// Recheck button
+	checkButton := &tg.KeyboardButtonCallback{
 		Text: "✅ I Joined – Check Again",
-		Data: "force_check",
+		Data: []byte("force_check"),
 	}
 
-	keyboard = append(keyboard, []InlineKeyboardButton{checkBtn})
+	rows = append(rows, tg.KeyboardButtonRow{
+		Buttons: []tg.KeyboardButtonClass{checkButton},
+	})
 
-	f.API.SendMessage(userID, text, keyboard)
+	_, err := api.MessagesSendMessage(ctx, &tg.MessagesSendMessageRequest{
+		Peer: &tg.InputPeerUser{
+			UserID:     userID,
+			AccessHash: 0,
+		},
+		Message: text,
+		ReplyMarkup: &tg.ReplyInlineMarkup{
+			Rows: rows,
+		},
+		RandomID: 0,
+	})
+
+	return err
 }
