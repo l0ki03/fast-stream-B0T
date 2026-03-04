@@ -5,13 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"regexp"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/biisal/fast-stream-bot/config"
-	botutils "github.com/biisal/fast-stream-bot/internal/bot/bot-utils"
 	"github.com/biisal/fast-stream-bot/internal/bot/commands"
 	repo "github.com/biisal/fast-stream-bot/internal/database/psql/sqlc"
 	"github.com/biisal/fast-stream-bot/internal/service/user"
@@ -31,6 +27,8 @@ type Bot struct {
 	Sender          *message.Sender
 	Cfg             *config.Config
 	userService     user.Service
+
+	WorkingPressure int32
 }
 
 func NewBot(
@@ -46,13 +44,14 @@ func NewBot(
 	sender := message.NewSender(api)
 
 	return &Bot{
-		Default:     isDefault,
-		Ctx:         ctx,
-		Client:      client,
-		Dispatcher:  dispatcher,
-		Cfg:         cfg,
-		Sender:      sender,
-		userService: userService,
+		Default:         isDefault,
+		Ctx:             ctx,
+		Client:          client,
+		Dispatcher:      dispatcher,
+		Cfg:             cfg,
+		Sender:          sender,
+		userService:     userService,
+		WorkingPressure: 0,
 	}
 }
 
@@ -108,7 +107,7 @@ func (b *Bot) SetUpOnMessage() {
 			return err
 		}
 
-		// 🔥 FORCE SUBSCRIBE CHECK
+		// ✅ FORCE SUBSCRIBE CHECK
 		if len(b.Cfg.FORCE_SUB_CHANNELS) > 0 {
 
 			joined := IsUserJoined(
