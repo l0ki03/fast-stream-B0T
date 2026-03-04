@@ -2,29 +2,37 @@ package bot
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"github.com/gotd/td/tg"
 )
 
-// Check if user joined all required channels (username based)
 func IsUserJoined(
 	ctx context.Context,
 	api *tg.Client,
 	userID int64,
-	channels []string, // 🔥 change to string (username)
+	channels []int64,
 ) bool {
 
-	for _, username := range channels {
+	for _, channelID := range channels {
 
-		resolved, err := api.ContactsResolveUsername(ctx, username)
+		// Resolve channel entity
+		full, err := api.ChannelsGetFullChannel(ctx, &tg.ChannelsGetFullChannelRequest{
+			Channel: &tg.InputChannel{
+				ChannelID:  channelID,
+				AccessHash: 0,
+			},
+		})
+
 		if err != nil {
-			slog.Info("Channel resolve failed", "channel", username, "error", err)
+			slog.Info("Channel resolve failed",
+				"channel", channelID,
+				"error", err,
+			)
 			return false
 		}
 
-		channel := resolved.Chats[0].(*tg.Channel)
+		channel := full.Chats[0].(*tg.Channel)
 
 		_, err = api.ChannelsGetParticipant(ctx, &tg.ChannelsGetParticipantRequest{
 			Channel: &tg.InputChannel{
@@ -39,7 +47,7 @@ func IsUserJoined(
 		if err != nil {
 			slog.Info("User not joined channel",
 				"user", userID,
-				"channel", username,
+				"channel", channelID,
 				"error", err,
 			)
 			return false
@@ -53,26 +61,10 @@ func SendForceSubscribeMessage(
 	ctx context.Context,
 	api *tg.Client,
 	userID int64,
-	channels []string,
+	channels []int64,
 ) error {
 
-	text := "🚨 You must join all required channels to continue:\n\n"
-
-	var rows []tg.KeyboardButtonRow
-
-	for _, username := range channels {
-
-		link := fmt.Sprintf("https://t.me/%s", username)
-
-		button := &tg.KeyboardButtonURL{
-			Text: "Join Channel",
-			URL:  link,
-		}
-
-		rows = append(rows, tg.KeyboardButtonRow{
-			Buttons: []tg.KeyboardButtonClass{button},
-		})
-	}
+	text := "🚨 You must join required channels to use this bot."
 
 	_, err := api.MessagesSendMessage(ctx, &tg.MessagesSendMessageRequest{
 		Peer: &tg.InputPeerUser{
