@@ -28,7 +28,7 @@ type Bot struct {
 	Cfg             *config.Config
 	userService     user.Service
 
-	WorkingPressure int32
+	WorkingPressure int // ✅ FIXED (int instead of int32)
 }
 
 func NewBot(
