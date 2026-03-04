@@ -2,11 +2,13 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/gotd/td/tg"
 )
 
+// Check if user joined all channels
 func IsUserJoined(
 	ctx context.Context,
 	api *tg.Client,
@@ -16,28 +18,10 @@ func IsUserJoined(
 
 	for _, channelID := range channels {
 
-		// Resolve channel entity
-		full, err := api.ChannelsGetFullChannel(ctx, &tg.ChannelsGetFullChannelRequest{
+		participant, err := api.ChannelsGetParticipant(ctx, &tg.ChannelsGetParticipantRequest{
 			Channel: &tg.InputChannel{
-				ChannelID:  channelID,
-				AccessHash: 0,
-			},
-		})
-
-		if err != nil {
-			slog.Info("Channel resolve failed",
-				"channel", channelID,
-				"error", err,
-			)
-			return false
-		}
-
-		channel := full.Chats[0].(*tg.Channel)
-
-		_, err = api.ChannelsGetParticipant(ctx, &tg.ChannelsGetParticipantRequest{
-			Channel: &tg.InputChannel{
-				ChannelID:  channel.ID,
-				AccessHash: channel.AccessHash,
+				ChannelID: channelID,
+				AccessHash: 0, // ⚠️ Important: If public channel, 0 works
 			},
 			Participant: &tg.InputPeerUser{
 				UserID: userID,
@@ -45,11 +29,11 @@ func IsUserJoined(
 		})
 
 		if err != nil {
-			slog.Info("User not joined channel",
-				"user", userID,
-				"channel", channelID,
-				"error", err,
-			)
+			slog.Info("User not joined channel", "user", userID, "channel", channelID, "error", err)
+			return false
+		}
+
+		if participant == nil {
 			return false
 		}
 	}
@@ -57,6 +41,7 @@ func IsUserJoined(
 	return true
 }
 
+// Send force subscribe message
 func SendForceSubscribeMessage(
 	ctx context.Context,
 	api *tg.Client,
@@ -64,13 +49,36 @@ func SendForceSubscribeMessage(
 	channels []int64,
 ) error {
 
-	text := "🚨 You must join required channels to use this bot."
+	msg := "🚨 Please join the required channels to use this bot:\n\n"
+
+	var buttons [][]tg.KeyboardButtonClass
+
+	for _, channelID := range channels {
+
+		link := fmt.Sprintf("https://t.me/c/%d", channelID)
+
+		msg += fmt.Sprintf("👉 %s\n", link)
+
+		buttons = append(buttons, []tg.KeyboardButtonClass{
+			&tg.KeyboardButtonURL{
+				Text: "Join Channel",
+				URL:  link,
+			},
+		})
+	}
 
 	_, err := api.MessagesSendMessage(ctx, &tg.MessagesSendMessageRequest{
 		Peer: &tg.InputPeerUser{
 			UserID: userID,
 		},
-		Message: text,
+		Message: msg,
+		ReplyMarkup: &tg.ReplyInlineMarkup{
+			Rows: []tg.KeyboardButtonRow{
+				{
+					Buttons: buttons[0],
+				},
+			},
+		},
 		RandomID: 0,
 	})
 
