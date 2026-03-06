@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"math/rand" // Telegram API को मैसेज भेजने के लिए RandomID चाहिए होता है
+	"math/rand" 
 
 	"github.com/gotd/td/tg"
 )
@@ -14,19 +14,27 @@ func IsUserJoined(
 	ctx context.Context,
 	api *tg.Client,
 	userID int64,
-	channels []string, // int64 से बदलकर string (Username) कर दिया गया है
+	channels []string,
 ) bool {
 
 	for _, username := range channels {
 
-		// 1. Username से चैनल को ढूँढना (Resolve) ताकि असली AccessHash मिल सके
-		peer, err := api.ContactsResolveUsername(ctx, username)
-		if err != nil || len(peer.Chats) == 0 {
+		// 1. Username से चैनल को ढूँढना (Resolve) - FIXED SYNTAX
+		resolved, err := api.ContactsResolveUsername(ctx, &tg.ContactsResolveUsernameRequest{
+			Username: username,
+		})
+		if err != nil {
 			slog.Error("Failed to resolve channel", "username", username, "error", err)
 			return false
 		}
 
-		channel, ok := peer.Chats[0].(*tg.Channel)
+		resPeer, ok := resolved.(*tg.ContactsResolvedPeer)
+		if !ok || len(resPeer.Chats) == 0 {
+			slog.Error("Channel chats not found", "username", username)
+			return false
+		}
+
+		channel, ok := resPeer.Chats[0].(*tg.Channel)
 		if !ok {
 			return false
 		}
@@ -35,7 +43,7 @@ func IsUserJoined(
 		participant, err := api.ChannelsGetParticipant(ctx, &tg.ChannelsGetParticipantRequest{
 			Channel: &tg.InputChannel{
 				ChannelID:  channel.ID,
-				AccessHash: channel.AccessHash, // असली AccessHash (जिससे CHANNEL_INVALID एरर नहीं आएगा)
+				AccessHash: channel.AccessHash,
 			},
 			Participant: &tg.InputPeerUser{
 				UserID: userID,
@@ -60,7 +68,7 @@ func SendForceSubscribeMessage(
 	ctx context.Context,
 	api *tg.Client,
 	userID int64,
-	channels []string, // int64 से बदलकर string कर दिया गया है
+	channels []string,
 ) error {
 
 	msg := "🚨 Please join the required channels to use this bot:\n\n"
@@ -69,7 +77,6 @@ func SendForceSubscribeMessage(
 
 	for _, username := range channels {
 
-		// Username के आधार पर लिंक बनाना
 		link := fmt.Sprintf("https://t.me/%s", username)
 
 		msg += fmt.Sprintf("👉 %s\n", link)
@@ -94,7 +101,7 @@ func SendForceSubscribeMessage(
 				},
 			},
 		},
-		RandomID: rand.Int63(), // ⚠️ IMPORTANT: इसके बिना Telegram (gotd) मैसेज को इग्नोर कर देता है
+		RandomID: rand.Int63(), 
 	})
 
 	return err
