@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"math/rand" 
+	"math/rand"
 
 	"github.com/gotd/td/tg"
 )
@@ -19,7 +19,7 @@ func IsUserJoined(
 
 	for _, username := range channels {
 
-		// 1. Username से चैनल को ढूँढना (Resolve) - FIXED SYNTAX
+		// 1. Username से चैनल को ढूँढना (Resolve)
 		resolved, err := api.ContactsResolveUsername(ctx, &tg.ContactsResolveUsernameRequest{
 			Username: username,
 		})
@@ -28,13 +28,13 @@ func IsUserJoined(
 			return false
 		}
 
-		resPeer, ok := resolved.(*tg.ContactsResolvedPeer)
-		if !ok || len(resPeer.Chats) == 0 {
+		// ⚠️ फिक्स: टाइप कास्टिंग हटा दी गई है क्योंकि 'resolved' पहले से ही सही टाइप में है
+		if len(resolved.Chats) == 0 {
 			slog.Error("Channel chats not found", "username", username)
 			return false
 		}
 
-		channel, ok := resPeer.Chats[0].(*tg.Channel)
+		channel, ok := resolved.Chats[0].(*tg.Channel)
 		if !ok {
 			return false
 		}
@@ -101,7 +101,7 @@ func SendForceSubscribeMessage(
 				},
 			},
 		},
-		RandomID: rand.Int63(), 
+		RandomID: rand.Int63(),
 	})
 
 	return err
