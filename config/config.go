@@ -3,8 +3,7 @@ package config
 
 import (
 	"log"
-	"strconv"
-	"strings"
+	"strings" // strconv को हटा दिया गया है क्योंकि अब हम सिर्फ string (Username) इस्तेमाल कर रहे हैं
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
@@ -59,9 +58,9 @@ type Config struct {
 
 	REDIS_DBSTRING string `env:"REDIS_DBSTRING" env-required:"true"`
 
-	// 🔥 NEW: Multi Channel Force Subscribe
-	FORCE_SUB_CHANNELS_STRING string  `env:"FORCE_SUB_CHANNELS"`
-	FORCE_SUB_CHANNELS        []int64
+	// 🔥 UPDATED: Multi Channel Force Subscribe (अब यह string लेगा)
+	FORCE_SUB_CHANNELS_STRING string   `env:"FORCE_SUB_CHANNELS"`
+	FORCE_SUB_CHANNELS        []string // int64 से बदलकर string कर दिया है
 
 	REF bool
 
@@ -75,8 +74,8 @@ func perseTokens(tokenString string) (s []string) {
 	return
 }
 
-// 🔥 NEW: Parse Force Subscribe Channels
-func parseForceChannels(channelString string) (channels []int64) {
+// 🔥 UPDATED: Parse Force Subscribe Channels (सिर्फ Username के लिए)
+func parseForceChannels(channelString string) (channels []string) {
 	if channelString == "" {
 		return
 	}
@@ -84,12 +83,11 @@ func parseForceChannels(channelString string) (channels []int64) {
 	parts := strings.Split(channelString, ",")
 
 	for _, ch := range parts {
-		id, err := strconv.ParseInt(strings.TrimSpace(ch), 10, 64)
-		if err != nil {
-			log.Printf("Invalid FORCE_SUB_CHANNEL ID: %s", ch)
-			continue
+		trimmed := strings.TrimSpace(ch)
+		if trimmed != "" {
+			// सिर्फ स्पेस हटाकर सीधा string (Username) को ऐड कर रहे हैं
+			channels = append(channels, trimmed)
 		}
-		channels = append(channels, id)
 	}
 
 	return
@@ -134,7 +132,7 @@ func MustLoad(configPath string) Config {
 	cfg.AppConfig = appCfg
 	cfg.BOT_TOKENS = perseTokens(cfg.BOT_TOKENS_STRING)
 
-	// 🔥 Parse Force Subscribe Channels
+	// 🔥 Parse Force Subscribe Channels (Updated)
 	cfg.FORCE_SUB_CHANNELS = parseForceChannels(cfg.FORCE_SUB_CHANNELS_STRING)
 
 	if cfg.ENVIRONMENT == "" {
