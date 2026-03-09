@@ -9,6 +9,7 @@ import (
 	botutils "github.com/biisal/fast-stream-bot/internal/bot/bot-utils"
 	"github.com/gotd/td/telegram"
 	"github.com/gotd/td/telegram/message/markup"
+	"github.com/gotd/td/telegram/message/styling" // ⚠️ NEW: Text formatting ke liye
 	"github.com/gotd/td/tg"
 )
 
@@ -142,27 +143,31 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		return nil, err
 	}
 
-	// 🔹 User Message
-	msg := fmt.Sprintf(
-		"🎉 Your file is ready!\n\n📂 Name: %s\n📦 Size: %s\n\nChoose below:",
-		file.FileName,
-		botutils.MakeSizeReadable(file.Size),
+	// 🔹 User Message (⚠️ NEW ATTRACTIVE DESIGN ⚠️)
+	var textOpts []styling.StyledTextOption
+
+	textOpts = append(textOpts,
+		styling.Plain("▶ "), styling.Bold("YOUR LINK GENERATED ! 😎\n\n"),
+		styling.Plain("▶ "), styling.Bold("FILE NAME : "), styling.Italic(file.FileName), styling.Plain("\n"),
+		styling.Plain("▶ "), styling.Bold("FILE SIZE : "), styling.Bold(botutils.MakeSizeReadable(file.Size)), styling.Plain("\n\n"),
+		styling.Plain("▶ "), styling.TextURL("Support Us", "https://t.me/biisalbot"),
 	)
 
+	// Agar REF/Credits enabled hain, to usey bhi add karo
 	if params.Cfg.REF {
-		msg += fmt.Sprintf("\n\n💳 Credits left: %d", bc.dbUser.Credit)
+		textOpts = append(textOpts, styling.Plain(fmt.Sprintf("\n\n💳 Credits left: %d", bc.dbUser.Credit)))
 	}
 
+	// 🔹 Inline Buttons (⚠️ DONE: Both buttons in one line ⚠️)
 	btn := markup.InlineKeyboard(
 		markup.Row(
-			markup.URL("▶ Watch Now", streamLink),
-		),
-		markup.Row(
-			markup.URL("⬇ Download Now", downloadLink),
+			markup.URL("STREAM 🔺", streamLink),
+			markup.URL("DOWNLOAD 🔻", downloadLink),
 		),
 	)
 
-	if _, err = bc.builder.Markup(btn).Text(bc.ctx, msg); err != nil {
+	// Msg send karte waqt ab .Text() ki jagah .StyledText() ka use kiya hai
+	if _, err = bc.builder.Markup(btn).StyledText(bc.ctx, textOpts...); err != nil {
 
 		slog.Error("Send message failed", "error", err)
 
