@@ -213,21 +213,29 @@
             document.getElementById("streamLinkInputMobile").value = fullUrl;
             document.getElementById("streamLinkInputPC").value = fullUrl;
 
-            // ⚠️ FIX: Set the VLC link directly on page load to bypass browser block
-            document.getElementById("vlcMobileBtn").href = "vlc://" + fullUrl;
+            // ⚠️ NEW FIX: Android Intent Logic for 100% VLC Open
+            var isAndroid = /Android/i.test(navigator.userAgent);
+            var vlcBtn = document.getElementById("vlcMobileBtn");
+
+            if (isAndroid) {
+                var cleanUrl = fullUrl.replace(/^https?:\/\//i, "");
+                var scheme = fullUrl.startsWith("https") ? "https" : "http";
+                var intentUrl = "intent://" + cleanUrl + "#Intent;package=org.videolan.vlc;action=android.intent.action.VIEW;scheme=" + scheme + ";type=video/*;end;";
+                vlcBtn.href = intentUrl;
+            } else {
+                vlcBtn.href = "vlc://" + fullUrl;
+            }
         }
 
-        // ⚠️ FIX: Updated logic to let native href work, while still showing loading animation
         function openVlcWithLoading(btn) {
             var originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i> <span>Opening VLC...</span>';
             btn.classList.add("opacity-80", "pointer-events-none");
 
-            // 10 second animation timeout (the link opens in the background immediately via href)
             setTimeout(function() {
                 btn.innerHTML = originalHTML;
                 btn.classList.remove("opacity-80", "pointer-events-none");
-            }, 10000);
+            }, 30000);
         }
 
         function copyVlcLink(inputId, btnId) {
