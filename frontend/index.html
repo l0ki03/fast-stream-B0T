@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>{{.Title}} | HMMEDIA STREAM</title>
     <meta property="og:title" content="{{.Title}} - Premium Stream">
@@ -61,7 +61,7 @@
             </video>
         </div>
 
-        <div class="glass-panel rounded-2xl p-6 md:p-8 mb-8 shadow-2xl">
+        <div class="glass-panel rounded-2xl p-6 md:p-8 mb-6 shadow-2xl">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                 <div class="flex-1 w-full">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold mb-4 border border-blue-500/20 tracking-wider">
@@ -77,6 +77,20 @@
                         <span>Download Fast</span>
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-xl p-5 md:p-6 mb-8 border border-purple-500/30 bg-purple-500/5 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-lg">
+            <div class="bg-purple-500/20 p-3 flex items-center justify-center rounded-full shrink-0 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+                <i class="fa-solid fa-circle-info text-2xl"></i>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-1 flex items-center gap-2">
+                    Important Note
+                </h4>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    Agar kisi kaaran se file Chrome ya VLC player par theek se stream nahi ho rahi hai, ya <b>audio delay</b> aa raha hai, toh aap simply upar diye gaye <b class="text-purple-400">"Download Fast"</b> button par click karke file ko download karein aur aaram se dekhein.
+                </p>
             </div>
         </div>
 
@@ -197,29 +211,21 @@
                 fullUrl = window.location.origin + (rawLink.startsWith('/') ? '' : '/') + rawLink;
             }
 
-            // Set input box values only
             document.getElementById("streamLinkInputMobile").value = fullUrl;
             document.getElementById("streamLinkInputPC").value = fullUrl;
         }
 
-        // Yeh function ab frontend loading aur aapke backend redirect dono ko handle karega
         function openVlcWithLoading(event, btn) {
-            event.preventDefault(); // Default click ko rokna
+            event.preventDefault(); 
             
             var originalHTML = btn.innerHTML;
+            var streamUrl = document.getElementById("streamLinkInputMobile").value;
 
-            // 1. Loading UI dikhana
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i> <span>Opening VLC...</span>';
             btn.classList.add("opacity-80", "pointer-events-none");
 
-            // 2. Aapka Backend Logic Call Karna (URL mein &redirect=vlc bhejna)
-            var currentUrl = window.location.href;
-            var redirectUrl = currentUrl.includes('redirect=vlc') ? currentUrl : currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'redirect=vlc';
-            
-            // Server par bhejna, wahan se Go backend VLC play karwa dega
-            window.location.href = redirectUrl;
+            window.location.href = "vlc://" + streamUrl;
 
-            // 3. Button ko 10 second baad normal karna
             setTimeout(function() {
                 btn.innerHTML = originalHTML;
                 btn.classList.remove("opacity-80", "pointer-events-none");
