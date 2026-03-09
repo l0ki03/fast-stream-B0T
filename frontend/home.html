@@ -1,78 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{{.AppName}}</title>
-	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
-		rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-		integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-		crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<link rel="stylesheet" type="text/css" href="/static/styles/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>HMMEDIA | Premium Stream Bot</title>
+    <meta property="og:title" content="HMMEDIA - Stream & Download">
+    <meta property="og:description" content="Upload or Forward your video to our bot and watch it online seamlessly.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
 
-<body class="bg-brand-dark-blue text-white text-sm ">
-	<div class="p-4  mx-auto max-w-7xl">
-		<!-- Header -->
-		<header class="pb-8 pt-4 text-center jet-font">
-			<div
-				class="w-full text-4xl bg-gradient-to-br text-transparent  from-[#8baefc] via-[#7aa2f7] to-[#6587d0] bg-clip-text md:text-6xl font-bold uppercase mb-3 no-scrollbar overflow-x-auto">
-				{{.AppName}}
-			</div>
-			<h1 class="text-xl md:text-2xl text-blue font-bold uppercase">
-				<i class="fa-solid fa-video"></i> Stream & Download
-			</h1>
-		</header>
+<body class="bg-[#0b0f19] text-gray-300 min-h-screen relative overflow-x-hidden">
 
-		<div class="w-full mb-4">
-			<img class="w-full rounded-lg border-blue-400/50 border-2 lg:border-4 hover:border-blue-400/80  transition duration-500 "
-				src="{{.HeaderImage}}" alt="">
-		</div>
-		<div class="w-full">
+    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/20 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full mix-blend-screen filter blur-[120px] pointer-events-none"></div>
 
-			<div class="flex jet-font flex-wrap gap-2 items-center justify-center">
-				<a href="{{.BotLink}}" target="_blank" class="w-fit">
-					<button
-						class="bg-[#7aa2f7] text-black hover:bg-[#7dcfff]  rounded-lg px-4 py-2 text-sm font-bold uppercase w-full sm:w-auto">
-						<i class="fa-brands fa-telegram mr-1"></i>Start Bot
-					</button>
-				</a>
-				<a href="{{.ChannelLink}}" target="_blank" class="w-fit">
-					<button
-						class="bg-[#7aa2f7] text-black hover:bg-[#7dcfff]  rounded-lg px-4 py-2 text-sm font-bold uppercase w-full sm:w-auto">
-						<i class="fa-solid fa-users mr-1"></i></i>Channel
-					</button>
-				</a>
-			</div>
-		</div>
-		<p class="mt-4  text-center text-sm md:text-lg text-blue jet-font">Upload/Forward your video to bot and watch it
-			online or get faster download link</p>
+    <nav class="sticky top-0 z-50 glass-panel border-b border-white/5 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3 text-2xl font-bold uppercase tracking-wider transition hover:scale-105 duration-300">
+                <i class="fa-solid fa-play text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]"></i>
+                <span class="text-gradient">HMMEDIA</span>
+            </a>
+        </div>
+    </nav>
 
-		<div class="w-full mt-8 rounded-lg   transition duration-500 ">
-			<h1 class="pb-2 mb-3 border-b border-blue-400 text-xl md:text-2xl text-blue font-bold uppercase">
-				Updates
-			</h1>
-			<div class="flex flex-col items-center justify-center gap-2 w-full">
-				{{range .Commits}}
-				<div class="bg-blue-400/5 rounded-lg p-2  md:p-4 w-full flex items-start justify-center flex-col">
-					<p class="text-white/60 mb-2"><i class="fa-solid fa-clock "></i> {{.Date}}</p>
-					<h1 class="md:text-lg text-white/80">{{.Message}}</h1>
-				</div>
-				{{else}}
-				<div class="bg-blue-400/5 rounded-lg p-2  md:p-4 w-full flex items-start justify-center flex-col">
-					<p class="text-white/60 mb-2"><i class="fa-solid fa-clock "></i> No updates yet</p>
-				</div>
-				{{end}}
-			</div>
-		</div>
-	</div>
-	</div>
+    <main class="max-w-4xl mx-auto px-4 py-12 relative z-10">
 
-	<!-- git commits  -->
+        <div class="glass-panel rounded-3xl p-8 md:p-12 mb-10 text-center flex flex-col items-center shadow-2xl border-t border-white/10">
+            <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                <i class="fa-brands fa-telegram text-5xl text-blue-400 drop-shadow-lg"></i>
+            </div>
+            
+            <h1 class="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+                Welcome to <span class="text-gradient">HMMEDIA</span>
+            </h1>
+            
+            <p class="text-gray-400 max-w-2xl mx-auto mb-10 text-sm md:text-base leading-relaxed">
+                Upload or Forward your video to our Telegram bot and instantly watch it online or get a high-speed download link. No waiting, no limits.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center">
+                <a href="{{.BotLink}}" target="_blank" class="group relative flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all duration-300 font-bold text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:-translate-y-1">
+                    <i class="fa-solid fa-robot group-hover:animate-bounce"></i>
+                    <span>Start Bot</span>
+                </a>
+                
+                <a href="{{.ChannelLink}}" target="_blank" class="group relative flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 font-bold text-white hover:-translate-y-1">
+                    <i class="fa-solid fa-users text-blue-400"></i>
+                    <span>Join Channel</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-6 md:p-10 border border-blue-500/20 relative overflow-hidden shadow-xl">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full mix-blend-screen filter blur-[80px] pointer-events-none"></div>
+            
+            <h2 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3 mb-8 relative z-10 border-b border-white/10 pb-4">
+                <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> 
+                Latest Updates
+            </h2>
+            
+            <div class="flex flex-col gap-4 relative z-10">
+                {{range .Commits}}
+                <div class="bg-black/40 rounded-xl p-5 border border-white/5 hover:border-white/10 transition-colors group">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-blue-500/20 text-blue-400 text-[10px] uppercase font-bold px-2 py-1 rounded tracking-wider">
+                            Update
+                        </span>
+                        <p class="text-gray-400 text-xs font-semibold flex items-center gap-2">
+                            <i class="fa-regular fa-calendar"></i> {{.Date}}
+                        </p>
+                    </div>
+                    <p class="text-gray-200 text-sm md:text-base leading-relaxed group-hover:text-white transition-colors">
+                        {{.Message}}
+                    </p>
+                </div>
+                {{else}}
+                <div class="bg-black/40 rounded-xl p-8 border border-white/5 text-center flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-box-open text-2xl text-gray-500"></i>
+                    </div>
+                    <p class="text-gray-400 font-medium">No updates available yet.</p>
+                </div>
+                {{end}}
+            </div>
+        </div>
+
+    </main>
+
 </body>
-
 </html>
