@@ -3,13 +3,12 @@ package commands
 import (
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/biisal/fast-stream-bot/config"
 	botutils "github.com/biisal/fast-stream-bot/internal/bot/bot-utils"
 	"github.com/gotd/td/telegram"
 	"github.com/gotd/td/telegram/message/markup"
-	"github.com/gotd/td/telegram/message/styling" // ⚠️ NEW: Text formatting ke liye
+	"github.com/gotd/td/telegram/message/styling"
 	"github.com/gotd/td/tg"
 )
 
@@ -20,38 +19,6 @@ type MediaForwardParams struct {
 }
 
 func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, error) {
-
-	// 🔹 Credit Check
-	if params.Cfg.REF {
-		if bc.dbUser.Credit < params.Cfg.MIN_CREDITS_REQUIRED {
-
-			referUrl := botutils.GetReferLink(bc.userInfo.Username, bc.userInfo.ID)
-
-			now := time.Now()
-			nextMidnight := time.Date(
-				now.Year(),
-				now.Month(),
-				now.Day()+1,
-				0, 0, 0, 0,
-				now.Location(),
-			)
-
-			btn := markup.InlineKeyboard(
-				markup.Row(
-					markup.URL("Get Credits By Refer", referUrl),
-				),
-			)
-
-			msg := fmt.Sprintf(
-				"You're out of credits! 😢\n\nYou need %d more credits.\n\nWait %s or refer a user to earn %d credits.",
-				params.Cfg.MIN_CREDITS_REQUIRED-bc.dbUser.Credit,
-				nextMidnight.Sub(now).Round(time.Second).String(),
-				params.Cfg.INCREMENT_CREDITS,
-			)
-
-			return bc.builder.Markup(btn).Text(bc.ctx, msg)
-		}
-	}
 
 	// 🔹 Safe Message Cast
 	if params.Update == nil || params.Update.Message == nil {
@@ -132,33 +99,17 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msgHash,
 	)
 
-	// 🔹 Deduct Credit
-	bc.dbUser, err = bc.userService.DecrementCredits(
-		bc.ctx,
-		bc.userInfo.ID,
-		params.Cfg.DECREMENT_CREDITS,
-	)
-	if err != nil {
-		slog.Error("Credit decrement failed", "error", err)
-		return nil, err
-	}
-
-	// 🔹 User Message (⚠️ NEW ATTRACTIVE DESIGN ⚠️)
+	// 🔹 User Message (Attractive Design)
 	var textOpts []styling.StyledTextOption
 
 	textOpts = append(textOpts,
-		styling.Plain("▶ "), styling.Bold("YOUR LINK GENERATED ! 😎\n\n"),
-		styling.Plain("▶ "), styling.Bold("FILE NAME : "), styling.Italic(file.FileName), styling.Plain("\n"),
-		styling.Plain("▶ "), styling.Bold("FILE SIZE : "), styling.Bold(botutils.MakeSizeReadable(file.Size)), styling.Plain("\n\n"),
-		styling.Plain("▶ "), styling.TextURL("Support Us", "https://t.me/biisalbot"),
+		styling.Bold("► YOUR LINK GENERATED ! 😎\n\n"),
+		styling.Bold("► FILE NAME : "), styling.Italic(file.FileName), styling.Plain("\n"),
+		styling.Bold("► FILE SIZE : "), styling.Bold(botutils.MakeSizeReadable(file.Size)), styling.Plain("\n\n"),
+		styling.Plain("► "), styling.TextURL("Support Us", "https://t.me/HMmedia_Movie"),
 	)
 
-	// Agar REF/Credits enabled hain, to usey bhi add karo
-	if params.Cfg.REF {
-		textOpts = append(textOpts, styling.Plain(fmt.Sprintf("\n\n💳 Credits left: %d", bc.dbUser.Credit)))
-	}
-
-	// 🔹 Inline Buttons (⚠️ DONE: Both buttons in one line ⚠️)
+	// 🔹 Inline Buttons
 	btn := markup.InlineKeyboard(
 		markup.Row(
 			markup.URL("STREAM 🔺", streamLink),
@@ -166,23 +117,12 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		),
 	)
 
-	// Msg send karte waqt ab .Text() ki jagah .StyledText() ka use kiya hai
 	if _, err = bc.builder.Markup(btn).StyledText(bc.ctx, textOpts...); err != nil {
-
 		slog.Error("Send message failed", "error", err)
-
-		// rollback credit
-		_, _ = bc.userService.IncrementCredits(
-			bc.ctx,
-			bc.userInfo.ID,
-			params.Cfg.DECREMENT_CREDITS,
-			false,
-		)
-
 		return nil, err
 	}
 
-	// 🔹 Update total links
+	// 🔹 Update total links (Database me count badhane ke liye)
 	bc.dbUser, _ = bc.userService.
 		IncrementTotalLinkCount(bc.ctx, bc.dbUser.ID)
 
