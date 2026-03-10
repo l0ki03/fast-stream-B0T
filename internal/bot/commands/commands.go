@@ -62,8 +62,8 @@ func (bc *Context) HandleSendCommandList(adminID int64) (tg.UpdatesClass, error)
 	if bc.userInfo.ID == adminID {
 		msg += `/broadcast - Broadcast a message to all users
 
-"/ban - Ban a user
-"/unban - Unban a user`
+/ban - Ban a user
+/unban - Unban a user`
 	}
 
 	return bc.Reply(msg)
@@ -89,7 +89,9 @@ func (bc *Context) HandleStart() (tg.UpdatesClass, error) {
 
 `, username)
 
-	shareLink := botutils.GetReferLink(bc.userInfo.Username, bc.userInfo.ID)
+	// ⚠️ NEW FIX: Telegram Native Share URL with text
+	referUrl := botutils.GetReferLink(bc.userInfo.Username, bc.userInfo.ID)
+	shareLink := fmt.Sprintf("https://t.me/share/url?url=%s&text=%%F0%%9F%%94%%A5%%20Best%%20Telegram%%20Bot%%20to%%20Stream%%20%%26%%20Download%%20Files%%20in%%20Full%%20Speed!%%20Try%%20it%%20now:", referUrl)
 	
 	// यहाँ आपके नए बटन्स जोड़े गए हैं
 	keyboard := markup.InlineKeyboard(
