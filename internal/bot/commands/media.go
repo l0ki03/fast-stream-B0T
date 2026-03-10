@@ -18,10 +18,8 @@ type MediaForwardParams struct {
 	Client *telegram.Client
 }
 
-// ⚠️ FIXED: Unlimited (No Referrals) & Attractive Message Style
 func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, error) {
 
-	// Safe Message Cast
 	if params.Update == nil || params.Update.Message == nil {
 		return nil, fmt.Errorf("invalid update or message")
 	}
@@ -45,7 +43,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 
 	msgHash := botutils.MakeHashByFileInfo(file)
 
-	// Forward to DB Channel
 	_, channelInputPeer, err := botutils.GetChannelPeer(
 		params.Client.API(),
 		bc.ctx,
@@ -65,7 +62,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		return nil, err
 	}
 
-	// Safe Message ID Extraction
 	updates, ok := fUpdate.(*tg.Updates)
 	if !ok {
 		return nil, fmt.Errorf("invalid update type")
@@ -83,7 +79,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		return nil, fmt.Errorf("message ID not found")
 	}
 
-	// Watch Link
 	streamLink := fmt.Sprintf(
 		"%s/watch/%d?hash=%s",
 		params.Cfg.FQDN,
@@ -91,7 +86,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msgHash,
 	)
 
-	// Download Link
 	downloadLink := fmt.Sprintf(
 		"%s/stream/%d/%d/%s?d=1",
 		params.Cfg.FQDN,
@@ -100,7 +94,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		msgHash,
 	)
 
-	// User Message (Attractive Design)
 	var textOpts []styling.StyledTextOption
 
 	textOpts = append(textOpts,
@@ -110,7 +103,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		styling.Plain("► "), styling.TextURL("Support Us", "https://t.me/biisalbot"),
 	)
 
-	// Inline Buttons
 	btn := markup.InlineKeyboard(
 		markup.Row(
 			markup.URL("STREAM 🔺", streamLink),
@@ -123,11 +115,9 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		return nil, err
 	}
 
-	// Update total links count
 	bc.dbUser, _ = bc.userService.
 		IncrementTotalLinkCount(bc.ctx, bc.dbUser.ID)
 
-	// Delete original message (if not admin)
 	if bc.userInfo.ID != params.Cfg.ADMIN_ID {
 		_, _ = params.Client.API().
 			MessagesDeleteMessages(
@@ -139,7 +129,6 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 			)
 	}
 
-	// Log in DB channel
 	logMsg := fmt.Sprintf(
 		"User: %s\nUserID: %d\n\nFile: %s\nSize: %s",
 		bc.userInfo.Username,
