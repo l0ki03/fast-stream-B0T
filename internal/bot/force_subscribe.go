@@ -19,7 +19,7 @@ func IsUserJoined(
 
 	for _, username := range channels {
 
-		// 1. Username से चैनल को ढूँढना (Resolve)
+		// 1. Username se channel ko dhundhna (Resolve)
 		resolved, err := api.ContactsResolveUsername(ctx, &tg.ContactsResolveUsernameRequest{
 			Username: username,
 		})
@@ -28,7 +28,6 @@ func IsUserJoined(
 			return false
 		}
 
-		// ⚠️ फिक्स: टाइप कास्टिंग हटा दी गई है क्योंकि 'resolved' पहले से ही सही टाइप में है
 		if len(resolved.Chats) == 0 {
 			slog.Error("Channel chats not found", "username", username)
 			return false
@@ -39,7 +38,7 @@ func IsUserJoined(
 			return false
 		}
 
-		// 2. अब असली ID और AccessHash का इस्तेमाल करके चेक करें
+		// 2. Ab asli ID aur AccessHash ka istemaal karke check karein
 		participant, err := api.ChannelsGetParticipant(ctx, &tg.ChannelsGetParticipantRequest{
 			Channel: &tg.InputChannel{
 				ChannelID:  channel.ID,
@@ -71,9 +70,13 @@ func SendForceSubscribeMessage(
 	channels []string,
 ) error {
 
-	msg := "🚨 Please join the required channels to use this bot:\n\n"
+	// ⚠️ Naya Stylish Font Message
+	msg := "🚀 🇧🇴🇹 🇰🇦 🇮🇸🇹🇪🇲🇦🇦🇱 🇰🇦🇷🇳🇪 🇰🇪 🇱🇮🇾🇪 🇪🇰 🇨🇭🇭🇴🇹🇦 🇸🇦 🇸🇹🇪🇵!\n\n" +
+		"🇵🇪🇭🇱🇪 🇳🇪🇪🇨🇭🇪 🇩🇮🇾🇪 🇬🇦🇾🇪 🇸🇦🇧🇭🇮 🇷🇪🇶🇺🇮🇷🇪🇩 🇨🇭🇦🇳🇳🇪🇱🇸 🇯🇴🇮🇳 🇰🇦🇷🇳🇦 🇿🇦🇷🇴🇴🇷🇮 🇭🇦🇮.\n" +
+		"🇺🇸🇰🇪 🇧🇦🇦🇩 🇦🇵🇳🇮 🇫🇮🇱🇪 🇩🇴🇧🇦🇷🇦 🇸🇪🇳🇩 🇾🇦 🇫🇴🇷🇼🇦🇷🇩 🇰🇦🇷🇪.\n" +
+		"✨ 🇫🇮🇷 🇦🇦🇵🇰🇴 🇹🇺🇷🇦🇳🇹 🇸🇹🇷🇪🇦🇲 / 🇩🇴🇼🇳🇱🇴🇦🇩 🇱🇮🇳🇰 🇲🇮🇱 🇯🇦🇾🇪🇬🇦.\n\n"
 
-	var buttons [][]tg.KeyboardButtonClass
+	var rows []tg.KeyboardButtonRow
 
 	for _, username := range channels {
 
@@ -81,10 +84,13 @@ func SendForceSubscribeMessage(
 
 		msg += fmt.Sprintf("👉 %s\n", link)
 
-		buttons = append(buttons, []tg.KeyboardButtonClass{
-			&tg.KeyboardButtonURL{
-				Text: "Join Channel",
-				URL:  link,
+		// Button mein bhi wahi special font daal diya hai (🇯🇴🇮🇳 = JOIN)
+		rows = append(rows, tg.KeyboardButtonRow{
+			Buttons: []tg.KeyboardButtonClass{
+				&tg.KeyboardButtonURL{
+					Text: "📢 🇯🇴🇮🇳 " + username,
+					URL:  link,
+				},
 			},
 		})
 	}
@@ -95,11 +101,7 @@ func SendForceSubscribeMessage(
 		},
 		Message: msg,
 		ReplyMarkup: &tg.ReplyInlineMarkup{
-			Rows: []tg.KeyboardButtonRow{
-				{
-					Buttons: buttons[0],
-				},
-			},
+			Rows: rows, 
 		},
 		RandomID: rand.Int63(),
 	})
