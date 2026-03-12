@@ -100,7 +100,7 @@ func (bc *Context) MediaForwarding(params MediaForwardParams) (tg.UpdatesClass, 
 		styling.Bold("► YOUR LINK GENERATED ! 😎\n\n"),
 		styling.Bold("► FILE NAME : "), styling.Italic(file.FileName), styling.Plain("\n"),
 		styling.Bold("► FILE SIZE : "), styling.Bold(botutils.MakeSizeReadable(file.Size)), styling.Plain("\n\n"),
-		styling.Plain("► "), styling.TextURL("Support Us", "https://t.me/biisalbot"),
+		styling.Plain("► "), styling.TextURL("Support Us", "https://t.me/HMmedia_Movie"),
 	)
 
 	btn := markup.InlineKeyboard(
