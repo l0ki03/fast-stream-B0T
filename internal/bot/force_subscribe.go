@@ -70,11 +70,11 @@ func SendForceSubscribeMessage(
 	channels []string,
 ) error {
 
-	// ⚠️ Naya Stylish Font Message
-	msg := "🚀 🇧🇴🇹 🇰🇦 🇮🇸🇹🇪🇲🇦🇦🇱 🇰🇦🇷🇳🇪 🇰🇪 🇱🇮🇾🇪 🇪🇰 🇨🇭🇭🇴🇹🇦 🇸🇦 🇸🇹🇪🇵!\n\n" +
-		"🇵🇪🇭🇱🇪 🇳🇪🇪🇨🇭🇪 🇩🇮🇾🇪 🇬🇦🇾🇪 🇸🇦🇧🇭🇮 🇷🇪🇶🇺🇮🇷🇪🇩 🇨🇭🇦🇳🇳🇪🇱🇸 🇯🇴🇮🇳 🇰🇦🇷🇳🇦 🇿🇦🇷🇴🇴🇷🇮 🇭🇦🇮.\n" +
-		"🇺🇸🇰🇪 🇧🇦🇦🇩 🇦🇵🇳🇮 🇫🇮🇱🇪 🇩🇴🇧🇦🇷🇦 🇸🇪🇳🇩 🇾🇦 🇫🇴🇷🇼🇦🇷🇩 🇰🇦🇷🇪.\n" +
-		"✨ 🇫🇮🇷 🇦🇦🇵🇰🇴 🇹🇺🇷🇦🇳🇹 🇸🇹🇷🇪🇦🇲 / 🇩🇴🇼🇳🇱🇴🇦🇩 🇱🇮🇳🇰 🇲🇮🇱 🇯🇦🇾🇪🇬🇦.\n\n"
+	// ⚠️ Safe Stylish Font & NO LINKS IN TEXT
+	msg := "🚀 𝗕𝗼𝘁 𝗸𝗮 𝗶𝘀𝘁𝗲𝗺𝗮𝗮𝗹 𝗸𝗮𝗿𝗻𝗲 𝗸𝗲 𝗹𝗶𝘆𝗲 𝗲𝗸 𝗰𝗵𝗵𝗼𝘁𝗮 𝘀𝗮 𝘀𝘁𝗲𝗽!\n\n" +
+		"𝗣𝗲𝗵𝗹𝗲 𝗻𝗲𝗲𝗰𝗵𝗲 𝗱𝗶𝘆𝗲 𝗴𝗮𝘆𝗲 𝘀𝗮𝗯𝗵𝗶 𝗿𝗲𝗾𝘂𝗶𝗿𝗲𝗱 𝗰𝗵𝗮𝗻𝗻𝗲𝗹𝘀 𝗝𝗼𝗶𝗻 𝗸𝗮𝗿𝗻𝗮 𝘇𝗮𝗿𝗼𝗼𝗿𝗶 𝗵𝗮𝗶.\n" +
+		"𝗨𝘀𝗸𝗲 𝗯𝗮𝗮𝗱 𝗮𝗽𝗻𝗶 𝗳𝗶𝗹𝗲 𝗱𝗼𝗯𝗮𝗿𝗮 𝘀𝗲𝗻𝗱 𝘆𝗮 𝗳𝗼𝗿𝘄𝗮𝗿𝗱 𝗸𝗮𝗿𝗲𝗶𝗻.\n" +
+		"✨ 𝗙𝗶𝗿 𝗮𝗮𝗽𝗸𝗼 𝘁𝘂𝗿𝗮𝗻𝘁 𝗦𝘁𝗿𝗲𝗮𝗺 / 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝗹𝗶𝗻𝗸 𝗺𝗶𝗹 𝗷𝗮𝘆𝗲𝗴𝗮.\n"
 
 	var rows []tg.KeyboardButtonRow
 
@@ -82,13 +82,13 @@ func SendForceSubscribeMessage(
 
 		link := fmt.Sprintf("https://t.me/%s", username)
 
-		msg += fmt.Sprintf("👉 %s\n", link)
+		// 🛑 Yahan se maine msg me link jodne wala code hata diya hai 🛑
 
-		// Button mein bhi wahi special font daal diya hai (🇯🇴🇮🇳 = JOIN)
+		// Button mein safe bold font (𝗝𝗢𝗜𝗡) aur link rahega
 		rows = append(rows, tg.KeyboardButtonRow{
 			Buttons: []tg.KeyboardButtonClass{
 				&tg.KeyboardButtonURL{
-					Text: "📢 🇯🇴🇮🇳 " + username,
+					Text: "📢 𝗝𝗢𝗜𝗡 " + username,
 					URL:  link,
 				},
 			},
